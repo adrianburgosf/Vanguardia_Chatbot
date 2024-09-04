@@ -1,18 +1,21 @@
 <div class="main-container">
     <div class="login-card">
         <h2>Registrarse</h2>
-        
+
         <form class="login-form">
             <input type="text" placeholder="Correo">
             <input type="password" placeholder="Contraseña">
             <input type="password" placeholder="Confirmar contraseña">
             <a>Reconocimiento Facial (Opcional)</a>
-            <button type="submit" class="icon-button">
+            <input id="file-upload" type="file" accept="png" style="display: none;">
+
+            <!-- Button that triggers the file input -->
+            <button type="button" class="icon-button" onclick="document.getElementById('file-upload').click();">
                 <span class="fa-stack custom-stack-size">
                     <i class="fa-solid fa-expand custom-stack-2x"></i>
                     <i class="fa-solid fa-user fa-stack-1x"></i>
                 </span>
-            </button> 
+            </button>
             <button type="submit">Registrarse</button>
             <h4>O registrate con</h4>
             <div class="social-icons">
