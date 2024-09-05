@@ -1,24 +1,25 @@
 <div class="main-container">
     <div class="login-card">
-        <h2>Iniciar Sesion</h2>
-        
-        <form class="login-form">
-            <input type="text" placeholder="Correo">
-            <input type="password" placeholder="Contraseña">
-            <a href="#">¿Olvidaste tu contraseña?</a>
-            <button type="submit">Iniciar Sesion</button>
-            <h4>O inicia sesion con</h4>
-            <div class="social-icons">
-                <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
-                <a href="#" class="icon">
-                    <span class="fa-stack custom-stack-size">
-                    <i class="fa-solid fa-expand custom-stack-2x"></i>
-                    <i class="fa-solid fa-user fa-stack-1x"></i>
-                    </span>
-                </a> 
-                <a href="#" class="icon"><i class="fa-brands fa-facebook"></i></a>
+        <h2>Iniciar Sesión</h2>
+
+        <form class="login-form" (ngSubmit)="login()">
+            <input [(ngModel)]="email" name="email" type="text" placeholder="Correo" required>
+            <input [(ngModel)]="password" name="password" type="password" placeholder="Contraseña" required>
+
+            <!-- Error message display -->
+            <div *ngIf="loginError" class="error-message">
+                {{ loginError }}
             </div>
+
+            <button type="submit">Iniciar Sesión</button>
         </form>
+
+        <h4>O inicia sesión con</h4>
+        <div class="social-icons">
+            <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
+            <a href="#" class="icon"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+
         <form class="login-form2">
             <a href="/register">¿No tienes una cuenta? <span class="special-color">Registrate</span></a>
         </form>

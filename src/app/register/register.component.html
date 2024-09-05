@@ -2,12 +2,15 @@
     <div class="login-card">
         <h2>Registrarse</h2>
 
-        <form class="login-form">
-            <input type="text" placeholder="Correo">
-            <input type="password" placeholder="Contraseña">
-            <input type="password" placeholder="Confirmar contraseña">
+        <form class="login-form" (ngSubmit)="register()">
+            <input [(ngModel)]="email" name="email" type="text" placeholder="Correo" required>
+            <input [(ngModel)]="password" name="password" type="password" placeholder="Contraseña" required>
+            <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password"
+                placeholder="Confirmar contraseña" required>
+
             <a>Reconocimiento Facial (Opcional)</a>
-            <input id="file-upload" type="file" accept="png" style="display: none;">
+            <input id="file-upload" type="file" (change)="onFileSelected($event)" accept="image/png"
+                style="display: none;">
 
             <!-- Button that triggers the file input -->
             <button type="button" class="icon-button" onclick="document.getElementById('file-upload').click();">
@@ -17,12 +20,14 @@
                 </span>
             </button>
             <button type="submit">Registrarse</button>
-            <h4>O registrate con</h4>
-            <div class="social-icons">
-                <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-facebook"></i></a>
-            </div>
         </form>
+
+        <h4>O registrate con</h4>
+        <div class="social-icons">
+            <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
+            <a href="#" class="icon"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+
         <form class="login-form2">
             <a href="/login">¿Ya tienes una cuenta? <span class="special-color">Inicia Sesion</span></a>
         </form>
