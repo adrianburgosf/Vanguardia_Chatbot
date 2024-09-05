@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // Define the schema for the User
 const userSchema = new mongoose.Schema({
@@ -39,7 +40,14 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    tokens: [
+        {
+            token: {
+                type: String
+            }
+        }
+    ]
 });
 
 // Hash the user's password before saving to the database (for email/password users)
@@ -54,6 +62,14 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.comparePassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
+
+userSchema.methods.generateAuthToken = async function () {
+    const user = this;
+    const token = jwt.sign({ _id: user._id.toString() }, "nanyytatan");
+    user.tokens = [{ token }];
+    await user.save();
+    return token;
+}
 
 // Export the model
 module.exports = mongoose.model('User', userSchema);

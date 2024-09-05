@@ -3,8 +3,8 @@
         <h2>Iniciar Sesión</h2>
 
         <form class="login-form" (ngSubmit)="login()">
-            <input [(ngModel)]="email" name="email" type="text" placeholder="Correo" required>
-            <input [(ngModel)]="password" name="password" type="password" placeholder="Contraseña" required>
+            <input [(ngModel)]="loginObj.email" name="email" type="email" placeholder="Correo" required>
+            <input [(ngModel)]="loginObj.password" name="password" type="password" placeholder="Contraseña" required>
 
             <!-- Error message display -->
             <div *ngIf="loginError" class="error-message">

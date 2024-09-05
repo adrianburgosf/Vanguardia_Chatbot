@@ -1,4 +1,5 @@
 const User = require('./userModel');
+const auth = require('../../middleware/auth.js');
 
 //Create new user
 const createUserControllerFn = async (req, res) => {
@@ -34,7 +35,7 @@ const loginUserControllerFn = async (req, res) => {
         // Check if user exists
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ msg: 'User not found' });
+            return res.status(404).json({ msg: 'No account found with this email' });
         }
 
         // Compare password
@@ -42,8 +43,9 @@ const loginUserControllerFn = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ msg: 'Invalid credentials' });
         }
-
-        res.status(200).json({ msg: 'Login successful' }); // No token or session is being generated
+        //Create token
+        const token = await user.generateAuthToken();
+        res.status(200).json({ user, token });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

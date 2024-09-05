@@ -13,29 +13,45 @@ import { NgIf } from '@angular/common';
 })
 export class LoginComponent {
 
-  email: string = '';
-  password: string = '';
+  loginObj: any = {
+    "email": "",
+    "password": ""
+  }
+
   loginError: string = '';  // To show error message if login fails
 
   constructor(private http: HttpClient, private router: Router) { }
 
   login() {
-    let loginData = {
-      "email": this.email,
-      "password": this.password,
-    };
-
-    this.http.post('http://localhost:3000/user/login', loginData)
-      .subscribe(
-        (response: any) => {
-          console.log('Login successful:', response);
-          this.router.navigate(['/landing-page']);  // Navigate to the desired page after login
-        },
-        (error) => {
-          console.error('Login error:', error);
-          this.loginError = 'Invalid email or password';  // Show error message
+    this.http.post('http://localhost:3000/user/login', this.loginObj).subscribe(
+      (res: any) => {
+        if (res && res.token) {
+          console.log('Login successful:', res);
+          localStorage.setItem('loginToken', res.token);  // Store token
+          this.router.navigate(['/landing-page']);  // Redirect to landing page
         }
-      );
+      },
+      (error) => {
+        // Check if the error is related to no account found
+        if (error.status === 404) {
+          this.loginError = 'No account found with this email. Please sign up first.';
+          this.loginObj = {
+            email: '',
+            password: ''
+          };
+        } else if (error.status === 401) {
+          this.loginError = 'Invalid email or password.';
+          this.loginObj = {
+            password: ''
+          };
+        } else {
+          this.loginError = 'An error occurred. Please try again later.';
+          this.loginObj = {
+            password: ''
+          };
+        }
+      }
+    );
   }
 }
 

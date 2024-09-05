@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -8,5 +9,10 @@ import { Component } from '@angular/core';
   styleUrl: './landing-page.component.css'
 })
 export class LandingPageComponent {
+  constructor(private authService: AuthService) { }
 
+  // Call logout method from AuthService
+  logout() {
+    this.authService.logout();
+  }
 }
