@@ -1,23 +1,57 @@
-<div class="chatbot-container">
-    <div class="chat-window">
+<div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="menu-icon">
+            <div class="icon-bars"></div>
+        </div>
+        <div class="profile-picture">
+            <img src="profile.jpg" alt="Profile Image">
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-area">
         <div class="chat-header">
-            <h2>Chat with Us</h2>
+            <div class="header-icons">
+                <span class="alert-icon">⚠️</span>
+                <span class="delete-icon">🗑️</span>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Search">
+            </div>
         </div>
 
-        <div class="chat-messages" id="chatMessages">
-            <div class="message bot">
-                <p>Hello! How can I assist you today?</p>
+        <!-- Messages Section -->
+        <div class="chat-messages">
+            <!-- Example of a received message -->
+            <div class="message received">
+                <div class="avatar">
+                    <img src="avatar1.jpg" alt="User Avatar">
+                </div>
+                <div class="message-content">
+                    <p>This AI chatbot has been developed to optimize communication...</p>
+                </div>
             </div>
-            <div class="message user">
-                <p>I need help with a product.</p>
+
+            <!-- Example of a sent message -->
+            <div class="message sent">
+                <div class="message-content">
+                    <p>Thank You :)</p>
+                </div>
+                <div class="avatar">
+                    <img src="avatar2.jpg" alt="User Avatar">
+                </div>
             </div>
-            <!-- Add more bot/user messages here -->
         </div>
 
-        <div class="chat-input">
-            <input type="text" placeholder="Type your message..." id="chatInputField" />
-            <button class="send-btn" id="sendMessageBtn">Send</button>
-            <button (click)="logout()">Logout</button>
+        <!-- Message Input Section -->
+        <div class="message-input">
+            <input type="text" placeholder="Type a new message here">
+            <div class="input-icons">
+                <span class="icon-attachment">📎</span>
+                <span class="icon-smiley">😊</span>
+            </div>
         </div>
+        <button (click)="logout()">Logout</button>
     </div>
 </div>

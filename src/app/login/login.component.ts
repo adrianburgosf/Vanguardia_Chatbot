@@ -1,17 +1,37 @@
-import { Component } from '@angular/core';
+declare var google: any;
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';  // Import FormsModule for ngModel
-import { NgIf } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, NgIf],  // Import FormsModule here
+  imports: [FormsModule, NgIf, CommonModule],  // Import FormsModule here
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+
+  ngOnInit(): void {
+    if (typeof window !== 'undefined' && typeof google !== 'undefined') {
+      google.accounts.id.initialize({
+        client_id: '556072889645-crfml8nhdb89lvitidhvaqad8v2oe3o6.apps.googleusercontent.com',
+        callback: (resp: any) => {
+
+        }
+      });
+      google.accounts.id.renderButton(document.getElementById("google-btn"), {
+        theme: 'filled_blue',
+        size: 'large',
+        shape: 'rectangle',
+        width: 340,
+      });
+    } else {
+      console.log('Google API not available');
+    }
+  }
 
   loginObj: any = {
     "email": "",

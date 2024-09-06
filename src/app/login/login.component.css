@@ -146,30 +146,28 @@ a .special-color{
     color: #10449A;
 }
 
-.social-icons {
-    margin: 0;
-}
-
-.social-icons a {
-    padding: 0 16px;
-    border-radius: 0.55rem;
+.icon-button {
     border: 2px solid #ebebeb;
-    text-decoration: none;
-    color: #216ce7;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 3px;
-    width: 105px;
-    height: 45px;
+    box-sizing: border-box;
+    cursor: pointer;
+    margin-top: 10px;
+    height: 40px;
+    width: 100%;
+    padding: 0 16px;
+    border-radius: 0.3rem;
+    background: #ffffff; /* Example color */
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
     text-align: center;
-    vertical-align: middle;
-    position: relative; /* Ensure stacking works correctly */
-    font-size: 1.5em;
+    letter-spacing: 2px;
+    transition: all 0.375s;
 }
 
-.social-icons > a:hover{
-    border: 2px solid #10449A;
+.icon-button:hover {
+    background: #ffffff; /* Example hover color */
+    border-color: #10449A;
 }
 
 .fa-stack {
@@ -181,15 +179,17 @@ a .special-color{
 }
 
 .custom-stack-2x {
-    font-size: 1.25em; /* Adjust size if needed */
+    font-size: 1.7em; /* Adjust size if needed */
     position: absolute; /* Ensure it stays centered */
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); /* Center the icon within its container */
+    color: #000;
 }
 
 .fa-stack-1x {
-    font-size: 0.65em; /* Adjust size if needed */
+    color: #000;
+    font-size: 0.8em; /* Adjust size if needed */
     position: absolute; /* Ensure it stays centered */
     top: 50%;
     left: 50%;
