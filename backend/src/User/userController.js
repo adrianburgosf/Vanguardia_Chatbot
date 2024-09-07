@@ -40,29 +40,35 @@ const createGoogleUserControllerFn = async (req, res) => {
             audience: '556072889645-crfml8nhdb89lvitidhvaqad8v2oe3o6.apps.googleusercontent.com',
         });
         const payload = ticket.getPayload();
-        const googleId = payload['sub'];  // Google unique user ID
+        const googleId = payload['sub'];
         const email = payload['email'];
         const profilePicture = payload['picture'];
 
-        // Check if the user already exists
-        let user = await User.findOne({ gmailId: googleId });
-
-        // If user does not exist, create a new user
-        if (!user) {
-            user = new User({
+        let existingUser = await User.findOne({ email: email });
+        if (existingUser) {
+            // Check if the existing user's auth method is different
+            if (existingUser.authMethod !== 'gmail') {
+                //console.log("Ya existe");
+                return res.status(400).json({
+                    message: `An account already exists with this e-mail address. Please sign in via normal login or use a different email.`
+                });
+            } else {
+                // If the user exists and the auth method is 'gmail', proceed with Google login
+                const tokenClient = await existingUser.generateAuthToken();
+                return res.status(200).json({ user: existingUser, tokenClient });
+            }
+        }
+        else { //Create a new user 
+            const user = new User({
                 email: email,
                 gmailId: googleId,
                 profilePicture: profilePicture,
                 authMethod: 'gmail'
             });
+            await user.save();
+            const tokenClient = await user.generateAuthToken();
+            return res.status(200).json({ user: user, tokenClient });
         }
-        await user.save();
-
-        // Create your own JWT for the session
-        const tokenClient = await user.generateAuthToken();
-
-        // Return the JWT to the frontend
-        res.status(200).json({ user, tokenClient });
     } catch (err) {
         res.status(500).json({ message: 'Google token verification failed' });
     }
@@ -77,6 +83,11 @@ const loginUserControllerFn = async (req, res) => {
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(404).json({ msg: 'No account found with this email' });
+        }
+        if (user.authMethod === 'gmail') {
+            return res.status(400).json({
+                msg: 'This email has already been used to sign in via Google. Please log in using Google.'
+            });
         }
 
         // Compare password

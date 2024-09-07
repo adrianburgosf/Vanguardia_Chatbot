@@ -8,7 +8,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent, canActivate: [AuthGuard] },  // Protected by the same guard
     { path: 'register', component: RegisterComponent, canActivate: [AuthGuard] },  // Protected by the same guard
     { path: 'landing-page', component: LandingPageComponent, canActivate: [AuthGuard] },  // Protected by the same guard
-    { path: '', redirectTo: '/register', pathMatch: 'full' },
+    { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: '**', redirectTo: '/register' }
 ];
 

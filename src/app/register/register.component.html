@@ -3,10 +3,12 @@
         <h2>Registrarse</h2>
 
         <form class="login-form" (ngSubmit)="register()">
-            <input [(ngModel)]="email" name="email" type="text" placeholder="Correo" required>
-            <input [(ngModel)]="password" name="password" type="password" placeholder="Contraseña" required>
-            <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password"
-                placeholder="Confirmar contraseña" required>
+            <input [(ngModel)]="email" name="email" (ngModelChange)="clearRegisterError()" type="text"
+                placeholder="Correo" required>
+            <input [(ngModel)]="password" name="password" (ngModelChange)="clearRegisterError()" type="password"
+                placeholder="Contraseña" required>
+            <input [(ngModel)]="confirmPassword" name="confirmPassword" (ngModelChange)="clearRegisterError()"
+                type="password" placeholder="Confirmar contraseña" required>
 
             <a>Reconocimiento Facial</a>
             <input id="file-upload" type="file" (change)="onFileSelected($event)" accept="image/png"
@@ -19,14 +21,14 @@
                     <i class="fa-solid fa-user fa-stack-1x"></i>
                 </span>
             </button>
+            <div *ngIf="RegisterError" class="error-message">
+                {{ RegisterError }}
+            </div>
             <button type="submit">Registrarse</button>
         </form>
 
         <h4>O registrate con</h4>
-        <div class="social-icons">
-            <a href="#" class="icon"><i class="fa-brands fa-google"></i></a>
-            <a href="#" class="icon"><i class="fa-brands fa-facebook"></i></a>
-        </div>
+        <div id="google-btn"></div>
 
         <form class="login-form2">
             <a href="/login">¿Ya tienes una cuenta? <span class="special-color">Inicia Sesion</span></a>

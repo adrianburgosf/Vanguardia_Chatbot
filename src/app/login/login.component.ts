@@ -51,7 +51,13 @@ export class LoginComponent implements OnInit {
         }
       },
       (error) => {
-        console.error('Google login error:', error);
+        if (error.status === 400) {
+          this.loginError = 'An account already exists with this e-mail address. Please sign in via normal login or use a different email.'
+          this.loginObj = {
+            email: '',
+            password: ''
+          };
+        }
       }
     );
   }
@@ -83,16 +89,28 @@ export class LoginComponent implements OnInit {
         } else if (error.status === 401) {
           this.loginError = 'Invalid email or password.';
           this.loginObj = {
+            email: this.loginObj.email,
+            password: ''
+          };
+        } else if (error.status === 400) {
+          this.loginError = 'This email has already been used to sign in via Google. Please log in using Google.';
+          this.loginObj = {
+            email: this.loginObj.email,
             password: ''
           };
         } else {
           this.loginError = 'An error occurred. Please try again later.';
           this.loginObj = {
+            email: this.loginObj.email,
             password: ''
           };
         }
       }
     );
+  }
+
+  clearLoginError() {
+    this.loginError = '';  // Clear the login error message
   }
 }
 
