@@ -1,5 +1,8 @@
 const User = require('./userModel');
 const auth = require('../../middleware/auth.js');
+const { OAuth2Client } = require('google-auth-library');
+
+const client = new OAuth2Client('556072889645-crfml8nhdb89lvitidhvaqad8v2oe3o6.apps.googleusercontent.com');
 
 //Create new user
 const createUserControllerFn = async (req, res) => {
@@ -26,6 +29,44 @@ const createUserControllerFn = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+const createGoogleUserControllerFn = async (req, res) => {
+    try {
+        const { token } = req.body;
+
+        // Verify the Google token
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: '556072889645-crfml8nhdb89lvitidhvaqad8v2oe3o6.apps.googleusercontent.com',
+        });
+        const payload = ticket.getPayload();
+        const googleId = payload['sub'];  // Google unique user ID
+        const email = payload['email'];
+        const profilePicture = payload['picture'];
+
+        // Check if the user already exists
+        let user = await User.findOne({ gmailId: googleId });
+
+        // If user does not exist, create a new user
+        if (!user) {
+            user = new User({
+                email: email,
+                gmailId: googleId,
+                profilePicture: profilePicture,
+                authMethod: 'gmail'
+            });
+        }
+        await user.save();
+
+        // Create your own JWT for the session
+        const tokenClient = await user.generateAuthToken();
+
+        // Return the JWT to the frontend
+        res.status(200).json({ user, tokenClient });
+    } catch (err) {
+        res.status(500).json({ message: 'Google token verification failed' });
+    }
+}
 
 // Login user
 const loginUserControllerFn = async (req, res) => {
@@ -79,6 +120,7 @@ const getUserByIdControllerFn = async (req, res) => {
 
 module.exports = {
     createUserControllerFn,
+    createGoogleUserControllerFn,
     loginUserControllerFn,
     getAllUsersControllerFn,
     getUserByIdControllerFn,

@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: function () {
-            return !this.facebookId && !this.gmailId;
+            return !this.facebookId;
         }, // Required if not using Facebook/Gmail
         unique: true,
         trim: true,

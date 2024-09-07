@@ -2,45 +2,66 @@ declare var google: any;
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';  // Import FormsModule for ngModel
+import { FormsModule } from '@angular/forms';
 import { CommonModule, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, NgIf, CommonModule],  // Import FormsModule here
+  imports: [FormsModule, NgIf, CommonModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
+
+
+//Login Methods
 export class LoginComponent implements OnInit {
+
+  constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined' && typeof google !== 'undefined') {
       google.accounts.id.initialize({
         client_id: '556072889645-crfml8nhdb89lvitidhvaqad8v2oe3o6.apps.googleusercontent.com',
-        callback: (resp: any) => {
+        callback: (response: any) => this.handleCredentialResponse(response)
+      });
 
-        }
-      });
-      google.accounts.id.renderButton(document.getElementById("google-btn"), {
-        theme: 'filled_blue',
-        size: 'large',
-        shape: 'rectangle',
-        width: 340,
-      });
-    } else {
+      google.accounts.id.renderButton(
+        document.getElementById("google-btn"),
+        { theme: 'filled_blue', size: 'large', width: "340", height: "43", shape: "rectangular" }
+      );
+    }
+    else {
       console.log('Google API not available');
     }
   }
 
+  //Google Login
+  handleCredentialResponse(response: any): void {
+    const token = response.credential; // The JWT from Google
+
+    // Send the Google token to the backend
+    this.http.post('http://localhost:3000/user/googleRegister', { token }).subscribe(
+      (res: any) => {
+        console.log(res);
+        if (res && res.tokenClient) {
+          console.log('Login successful:', res);
+          localStorage.setItem('loginToken', res.tokenClient);
+          this.router.navigate(['/landing-page']);
+        }
+      },
+      (error) => {
+        console.error('Google login error:', error);
+      }
+    );
+  }
+
+  //Normal Email Login
   loginObj: any = {
     "email": "",
     "password": ""
   }
-
-  loginError: string = '';  // To show error message if login fails
-
-  constructor(private http: HttpClient, private router: Router) { }
+  loginError: string = '';
 
   login() {
     this.http.post('http://localhost:3000/user/login', this.loginObj).subscribe(
