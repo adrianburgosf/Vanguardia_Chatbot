@@ -1,4 +1,5 @@
 declare var google: any;
+declare var FB: any;
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -19,6 +20,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private http: HttpClient, private router: Router) { }
 
+  //Google Login
   ngOnInit(): void {
     if (typeof window !== 'undefined' && typeof google !== 'undefined') {
       google.accounts.id.initialize({
@@ -36,7 +38,6 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  //Google Login
   handleCredentialResponse(response: any): void {
     const token = response.credential; // The JWT from Google
 
@@ -60,6 +61,11 @@ export class LoginComponent implements OnInit {
         }
       }
     );
+  }
+
+  //Facebook Login
+  loginWithFacebook(): void {
+    console.log("NADEYSHHHHHHHHHHHHHHHHHHHHHHHH");
   }
 
   //Normal Email Login
@@ -110,7 +116,7 @@ export class LoginComponent implements OnInit {
   }
 
   clearLoginError() {
-    this.loginError = '';  // Clear the login error message
+    this.loginError = '';
   }
 }
 
