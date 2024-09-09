@@ -5,9 +5,9 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
 import { AuthGuard } from './auth.guard';
 
 export const routes: Routes = [
-    { path: 'login', component: LoginComponent, canActivate: [AuthGuard] },  // Protected by the same guard
-    { path: 'register', component: RegisterComponent, canActivate: [AuthGuard] },  // Protected by the same guard
-    { path: 'landing-page', component: LandingPageComponent, canActivate: [AuthGuard] },  // Protected by the same guard
+    { path: 'login', component: LoginComponent, canActivate: [AuthGuard] },
+    { path: 'register', component: RegisterComponent, canActivate: [AuthGuard] },
+    { path: 'landing-page', component: LandingPageComponent, canActivate: [AuthGuard] },
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: '**', redirectTo: '/register' }
 ];

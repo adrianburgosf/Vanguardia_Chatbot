@@ -4,10 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://accounts.google.com/gsi/client" async></script>
     <script async defer crossorigin="anonymous"
         src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v20.0&appId=2026307401136178"
         nonce="jbqTPNhq"></script>
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <script>
+        window.checkLoginState = function () {
+            // Assuming FB is already loaded and initialized
+            FB.login(function (response) {
+                if (response.authResponse) {
+                    console.log('Logged in', response);
+                    // You can also dispatch a custom event or directly manipulate the DOM here if necessary
+                } else {
+                    console.log('User cancelled login or did not fully authorize.');
+                }
+            }, { scope: 'email' });
+        };
+    </script>
     <title>Chatbot</title>
 </head>
 

@@ -1,10 +1,11 @@
 declare var google: any;
 declare var FB: any;
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, NgIf } from '@angular/common';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -18,10 +19,11 @@ import { CommonModule, NgIf } from '@angular/common';
 //Login Methods
 export class LoginComponent implements OnInit {
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, private _ngZone: NgZone, private service: AuthService,) { }
 
   //Google Login
   ngOnInit(): void {
+
     if (typeof window !== 'undefined' && typeof google !== 'undefined') {
       google.accounts.id.initialize({
         client_id: '556072889645-crfml8nhdb89lvitidhvaqad8v2oe3o6.apps.googleusercontent.com',
@@ -64,8 +66,21 @@ export class LoginComponent implements OnInit {
   }
 
   //Facebook Login
-  loginWithFacebook(): void {
-    console.log("NADEYSHHHHHHHHHHHHHHHHHHHHHHHH");
+  async checkLoginState() {
+    console.log("Hola1");
+    FB.login(async (result: any) => {
+      console.log("Hola");
+      await this.service.LoginWithFacebook(result.authResponse.accessToken).subscribe(
+        (x: any) => {
+          this._ngZone.run(() => {
+            this.router.navigate(['/landing-page'])
+          })
+        },
+        (error: any) => {
+          console.log(error);
+        }
+      );
+    }, { scope: 'email' });
   }
 
   //Normal Email Login
