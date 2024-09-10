@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
 
       google.accounts.id.renderButton(
         document.getElementById("google-btn"),
-        { theme: 'filled_blue', size: 'large', width: "340", height: "43", shape: "rectangular" }
+        { theme: 'filled_black', size: 'large', width: "340", height: "45", shape: "rectangular" }
       );
     }
     else {

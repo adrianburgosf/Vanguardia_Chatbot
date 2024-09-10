@@ -5,8 +5,10 @@ const router = express.Router();
 
 // Create user
 router.post('/user/create', userController.createUserControllerFn);
-//Create google user
+//Handle google user
 router.post('/user/googleRegister', userController.createGoogleUserControllerFn);
+//Handle facebook user
+router.post('/user/facebookRegister', userController.handleFacebookUserControllerFn);
 //Login
 router.post('/user/login', userController.loginUserControllerFn);
 // Get all users

@@ -30,10 +30,11 @@ const createUserControllerFn = async (req, res) => {
     }
 };
 
+//Handle Google Users
 const createGoogleUserControllerFn = async (req, res) => {
     try {
         const { token } = req.body;
-
+        console.log(token);
         // Verify the Google token
         const ticket = await client.verifyIdToken({
             idToken: token,
@@ -71,6 +72,18 @@ const createGoogleUserControllerFn = async (req, res) => {
         }
     } catch (err) {
         res.status(500).json({ message: 'Google token verification failed' });
+    }
+}
+
+//Handle Facebook Users
+const handleFacebookUserControllerFn = async (req, res) => {
+    try {
+        const { token } = req.body;
+        console.log(token);
+        //const debugTokenResponse = await _httpClient.GetAsync("https://graph.facebook.com/debug_token?imput_token=" + token + $"&access_token={}|{}")
+        return res.status(200).json({ token });
+    } catch (error) {
+        res.status(500).json({ message: error });
     }
 }
 
@@ -135,4 +148,5 @@ module.exports = {
     loginUserControllerFn,
     getAllUsersControllerFn,
     getUserByIdControllerFn,
+    handleFacebookUserControllerFn,
 };
