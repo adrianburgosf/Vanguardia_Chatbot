@@ -4,6 +4,47 @@
     box-sizing: border-box;
 }
 
+/*Facebook Button*/
+.btn-facebook {
+    background-color: #0606b9; /* Facebook blue */
+    color: white; /* Text color */
+    padding: 10px 15px; /* Padding for the button */
+    border: none; /* No borders */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    font-weight: bold; /* Font weight */
+    cursor: pointer; /* Pointer cursor on hover */
+    display: flex; /* Allows setting padding and margins */
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    position: relative;
+    width: 340px;
+    margin-top: 10px;
+}
+
+.btn-facebook i {
+    position: absolute; /* Absolute position for the icon */
+    left: 2px; /* Space from the left edge of the button */
+    font-size: 40px; /* Adjust the font size to make the icon bigger */
+}
+
+.btn-facebook span {
+    flex-grow: 1; /* Allows the text to expand and center align itself */
+    text-align: center; /* Ensure the text is centered */
+}
+
+.btn-facebook:hover, .btn-facebook:focus {
+    background-color: #2d4373; /* Darker blue on hover/focus */
+    color: #cccccc; /* Keep text color white */
+    text-decoration: none; /* No underline */
+}
+
+.btn-facebook:active {
+    background-color: #23345d; /* Even darker blue when active */
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125); /* Inner shadow for a pressed effect */
+}
+
 .error-message {
     color: red;
     font-weight: bold;
@@ -98,7 +139,6 @@
     font-size: 0.9rem;
     text-align: left;
     text-decoration: none;
-    margin-bottom: 6px;
     transition: all 0.375s;
 }
 

@@ -12,7 +12,7 @@ export class AuthService {
 
   LoginWithFacebook(token: string): Observable<any> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    const body = JSON.stringify({ token }); // Ensure it's an object
+    const body = JSON.stringify({ token });
     return this.http.post('http://localhost:3000/user/facebookRegister', body, { headers });
   }
 

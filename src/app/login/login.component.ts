@@ -89,6 +89,7 @@ export class LoginComponent implements OnInit {
       if (response.status === 'connected') {
         // The user logged in successfully and authorized your app
         console.log('Logged in and authorized:', response.authResponse);
+        console.log(response.authResponse.accessToken);
         this.handleLogin(response.authResponse.accessToken); // Proceed with login
       } else if (response.status === 'not_authorized') {
         // The user is logged into Facebook but has not authorized your app

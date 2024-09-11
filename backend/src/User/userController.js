@@ -8,7 +8,7 @@ const client = new OAuth2Client('556072889645-crfml8nhdb89lvitidhvaqad8v2oe3o6.a
 //Create new user
 const createUserControllerFn = async (req, res) => {
     try {
-        const { email, password, profilePicture, authMethod } = req.body;
+        const { email, name, password, profilePicture, authMethod } = req.body;
 
         // Check if user already exists
         let user = await User.findOne({ email });
@@ -19,6 +19,7 @@ const createUserControllerFn = async (req, res) => {
         // Create new user
         user = new User({
             email,
+            name,
             password,
             profilePicture,
             authMethod: authMethod || 'email' // Default for email/password registration
@@ -43,6 +44,7 @@ const createGoogleUserControllerFn = async (req, res) => {
         const payload = ticket.getPayload();
         const googleId = payload['sub'];
         const email = payload['email'];
+        const name = payload['name'];
         const profilePicture = payload['picture'];
 
         let existingUser = await User.findOne({ email: email });
@@ -63,6 +65,7 @@ const createGoogleUserControllerFn = async (req, res) => {
             const user = new User({
                 email: email,
                 gmailId: googleId,
+                name: name,
                 profilePicture: profilePicture,
                 authMethod: 'gmail'
             });
@@ -86,6 +89,7 @@ const handleFacebookUserControllerFn = async (req, res) => {
 
         const facebookId = response.data.id;
         const email = response.data.email;
+        const name = response.data.name;
 
         let existingUser = await User.findOne({ email: email });
         if (existingUser) {
@@ -104,6 +108,7 @@ const handleFacebookUserControllerFn = async (req, res) => {
         else { //Create a new user 
             const user = new User({
                 email: email,
+                name: name,
                 facebookId: facebookId,
                 authMethod: 'facebook'
             });

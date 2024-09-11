@@ -1,9 +1,11 @@
 declare var google: any;
+declare var FB: any;
 import { NgIf } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { FormsModule } from '@angular/forms';  // Import FormsModule for ngModel
 import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-register',
@@ -16,11 +18,12 @@ export class RegisterComponent implements OnInit {
 
   email: string = '';
   password: string = '';
+  name: string = '';
   confirmPassword: string = '';
   profilePicture: File | null = null;
   RegisterError: string = '';
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router, private service: AuthService, private _ngZone: NgZone) { }
 
   ngOnInit(): void {
     if (typeof window !== 'undefined' && typeof google !== 'undefined') {
@@ -31,7 +34,7 @@ export class RegisterComponent implements OnInit {
 
       google.accounts.id.renderButton(
         document.getElementById("google-btn"),
-        { theme: 'filled_blue', size: 'large', width: "340", height: "43", shape: "rectangular" }
+        { theme: 'filled_black', size: 'large', width: "340", height: "45", shape: "rectangular" }
       );
     }
     else {
@@ -61,22 +64,84 @@ export class RegisterComponent implements OnInit {
     );
   }
 
+  //Facebook Login
+  async checkLoginState() {
+    console.log("Checking login state...");
+    this.clearRegisterError();
+    FB.login((response: any) => {
+      if (response.status === 'connected') {
+        // The user logged in successfully and authorized your app
+        console.log('Logged in and authorized:', response.authResponse);
+        this.handleLogin(response.authResponse.accessToken); // Proceed with login
+      } else if (response.status === 'not_authorized') {
+        // The user is logged into Facebook but has not authorized your app
+        console.log(response.status);
+        console.log('Logged into Facebook but not authorized the app');
+        this.RegisterError = 'Please authorize the app to log in.';
+      } else {
+        // The user isn't logged into Facebook, or they closed the popup without logging in
+        console.log(response.status);
+        console.log('User not logged in or closed the popup:', response);
+        this.RegisterError = 'Login cancelled or not authorized.';
+      }
+    }, { scope: 'email', auth_type: 'reauthenticate' });
+  }
+
+  private handleLogin(accessToken: string) {
+    this.service.LoginWithFacebook(accessToken).subscribe(
+      (res: any) => {
+        this._ngZone.run(() => {
+          if (res && res.tokenClient) {
+            console.log('Login successful:', res);
+            localStorage.setItem('loginToken', res.tokenClient);
+            this.router.navigate(['/landing-page']);
+          }
+        });
+      },
+      (error) => {
+        this._ngZone.run(() => {
+          if (error.status === 400) {
+            this.loginErrorDuplicate();
+            this.RegisterError = 'An account already exists with this e-mail address. Please sign in using a different method or use a different Facebook account.'
+            this.email = '';
+            this.password = '';
+            this.name = '';
+            this.confirmPassword = '';
+
+          }
+          else {
+            this.RegisterError = 'An error occurred. Please try again later.';
+            this.email = '';
+            this.password = '';
+            this.name = '';
+            this.confirmPassword = '';
+          }
+        });
+      }
+    );
+  }
+
   onFileSelected(event: any) {
     this.profilePicture = event.target.files[0];
   }
 
   register() {
     if (!this.isValidEmail(this.email)) {
-      this.RegisterError = 'Please enter a valid email address';
+      this.RegisterError = 'Please enter a valid email address.';
       return;
     }
     if (this.password !== this.confirmPassword) {
-      this.RegisterError = 'Passwords do not match';
+      this.RegisterError = 'Passwords do not match.';
+      return;
+    }
+    if (!this.name) {
+      this.RegisterError = 'Please enter a name.';
       return;
     }
 
     let userData = {
       "email": this.email,
+      "name": this.name,
       "password": this.password,
       "profilePicture": this.profilePicture,
     };
@@ -84,17 +149,21 @@ export class RegisterComponent implements OnInit {
       .subscribe(
         response => {
           console.log('User registered:', response);
-          alert("Registered");
+          //Falta poner un alert bonito de que se registro el usuario
+          alert('Registered!');
+          this.router.navigate(['/login']);
         },
         (error) => {
           if (error.status === 400) {
             this.RegisterError = 'User already exists';
+            this.name = '';
             this.password = '';
             this.confirmPassword = '';
           }
           else {
             this.RegisterError = 'An error occurred. Please try again later.';
             this.password = '';
+            this.name = '';
             this.confirmPassword = '';
           }
         }
@@ -108,5 +177,11 @@ export class RegisterComponent implements OnInit {
 
   clearRegisterError() {
     this.RegisterError = '';  // Clear the login error messages
+  }
+
+  loginErrorDuplicate(): void {
+    this._ngZone.run(() => {
+      this.RegisterError = 'An account already exists with this e-mail address. Please sign in using a different method or use a different Facebook account.'
+    });
   }
 }
