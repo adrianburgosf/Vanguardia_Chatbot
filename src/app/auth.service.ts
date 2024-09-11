@@ -10,9 +10,10 @@ export class AuthService {
 
   constructor(private router: Router, private http: HttpClient) { }
 
-  LoginWithFacebook(credentials: string): Observable<any> {
-    const header = new HttpHeaders().set('Content-type', 'application/json');
-    return this.http.post('http://localhost:3000/user/facebookRegister', JSON.stringify(credentials), { headers: header, withCredentials: true });
+  LoginWithFacebook(token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    const body = JSON.stringify({ token }); // Ensure it's an object
+    return this.http.post('http://localhost:3000/user/facebookRegister', body, { headers });
   }
 
   // Check if running in a browser environment

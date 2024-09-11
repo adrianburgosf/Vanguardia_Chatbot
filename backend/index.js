@@ -4,7 +4,13 @@ const app = express();
 const cors = require('cors');
 const routes = require('./routes/routes');
 
-app.use(cors());
+const corsOptions = {
+    origin: 'https://localhost:4200', // This should be the URL of your frontend
+    credentials: true, // To allow sending cookies and authorization headers
+    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(routes);
 

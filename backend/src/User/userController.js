@@ -1,6 +1,7 @@
 const User = require('./userModel');
 const auth = require('../../middleware/auth.js');
 const { OAuth2Client } = require('google-auth-library');
+const axios = require('axios');
 
 const client = new OAuth2Client('556072889645-crfml8nhdb89lvitidhvaqad8v2oe3o6.apps.googleusercontent.com');
 
@@ -34,7 +35,6 @@ const createUserControllerFn = async (req, res) => {
 const createGoogleUserControllerFn = async (req, res) => {
     try {
         const { token } = req.body;
-        console.log(token);
         // Verify the Google token
         const ticket = await client.verifyIdToken({
             idToken: token,
@@ -76,14 +76,43 @@ const createGoogleUserControllerFn = async (req, res) => {
 }
 
 //Handle Facebook Users
+
 const handleFacebookUserControllerFn = async (req, res) => {
     try {
+        //Facebook Authentication
         const { token } = req.body;
-        console.log(token);
-        //const debugTokenResponse = await _httpClient.GetAsync("https://graph.facebook.com/debug_token?imput_token=" + token + $"&access_token={}|{}")
-        return res.status(200).json({ token });
+        const url = `https://graph.facebook.com/me?fields=id,name,email&access_token=${token}`;
+        const response = await axios.get(url);
+
+        const facebookId = response.data.id;
+        const email = response.data.email;
+
+        let existingUser = await User.findOne({ email: email });
+        if (existingUser) {
+            // Check if the existing user's auth method is different
+            if (existingUser.authMethod !== 'facebook') {
+                console.log("Ya existe");
+                return res.status(400).json({
+                    message: `An account already exists with this e-mail address. Please sign in via normal login or use a different Facebook account.`
+                });
+            } else {
+                // If the user exists and the auth method is 'facebook', proceed with Facebook login
+                const tokenClient = await existingUser.generateAuthToken();
+                return res.status(200).json({ user: existingUser, tokenClient });
+            }
+        }
+        else { //Create a new user 
+            const user = new User({
+                email: email,
+                facebookId: facebookId,
+                authMethod: 'facebook'
+            });
+            await user.save();
+            const tokenClient = await user.generateAuthToken();
+            return res.status(200).json({ user: user, tokenClient });
+        }
     } catch (error) {
-        res.status(500).json({ message: error });
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 }
 
@@ -100,6 +129,11 @@ const loginUserControllerFn = async (req, res) => {
         if (user.authMethod === 'gmail') {
             return res.status(400).json({
                 msg: 'This email has already been used to sign in via Google. Please log in using Google.'
+            });
+        }
+        if (user.authMethod === 'facebook') {
+            return res.status(403).json({
+                msg: 'This email has already been used to sign in via Facebook. Please log in using Facebook.'
             });
         }
 
