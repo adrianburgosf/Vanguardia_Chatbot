@@ -1,3 +1,29 @@
+<div class="chatbot">
+    <header>
+        <h2>Chatbot</h2>
+    </header>
+    <ul class="chatbox">
+        <li class="chat incoming" *ngFor="let message of messages" [ngClass]="message.class">
+            <!-- For incoming messages (bot) -->
+            <ng-container *ngIf="message.class === 'incoming'; else outgoingMessage">
+                <span class="material-symbols-outlined">smart_toy</span>
+                <p>{{ message.content }}</p>
+            </ng-container>
+
+            <!-- For outgoing messages (user) -->
+            <ng-template #outgoingMessage>
+                <p>{{ message.content }}</p>
+            </ng-template>
+        </li>
+    </ul>
+    <div class="chat-input">
+        <textarea [(ngModel)]="userMessage" placeholder="Enter a message..." required></textarea>
+        <span id="send-btn" class="material-symbols-outlined" (click)="sendMessage()">send</span>
+    </div>
+</div>
+
+
+
 <div>
     <button (click)="logout()">Logout</button>
 </div>
