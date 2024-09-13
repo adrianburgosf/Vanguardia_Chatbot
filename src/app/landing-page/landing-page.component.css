@@ -3,23 +3,21 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .chatbot {
-  position: fixed;
-  right: 40px;
-  bottom: 100px;
-  width: 420px;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
   overflow: hidden;
   background: #fff;
-  border-radius: 15px;
   box-shadow: 0 0 128px 0 rgba(0, 0, 0, 0.1),
               0 32px 64px -48px rgba(0, 0, 0, 0.5);
 }
 
 .chatbot header {
-  background: #724ae8;
+  background: #000;
   padding: 16px 0;
   text-align: center;
 }
@@ -30,9 +28,10 @@
 }
 
 .chatbot .chatbox {
-  height: 510px;
+  flex-grow: 1;
   overflow-y: auto;
-  padding: 30px 20px 70px;
+  padding: 30px 27% 70px;
+  
 }
 
 .chatbox .chat {
@@ -44,7 +43,7 @@
   width: 32px;
   color: #fff;
   align-self: flex-end;
-  background: #724ae8;
+  background: #000;
   text-align: center;
   line-height: 32px;
   border-radius: 4px;
@@ -63,7 +62,7 @@
   font-size: 0.95rem;
   padding: 12px 16px;
   border-radius: 10px 10px 0 10px;
-  background: #724ae8;
+  background: #000;
 }
 
 .chatbox .incoming p {
@@ -73,7 +72,7 @@
 }
 
 .chatbot .chat-input {
-  position: absolute;
+  position: relative; /* Changed from absolute to relative for better control */
   bottom: 0;
   width: 100%;
   display: flex;
@@ -97,7 +96,7 @@
   align-self: flex-end;
   height: 55px;
   line-height: 55px;
-  color: #724ae8;
+  color: #000;
   font-size: 1.35rem;
   cursor: pointer;
   visibility: hidden;
@@ -108,36 +107,38 @@
 }
 
 @media (max-width: 490px) {
+
   .chatbot {
-    right: 0;
-    bottom: 0;
-    width: 100%;
+    width: 100%; /* Full width on mobile */
     height: 100%;
     border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
   }
-
   .chatbot .chatbox {
-    height: 90%;
+    height: 100%;
+    padding: 30px 20px 70px;
   }
-}
+  .chatbox {
+    padding: 10px; /* Less padding for mobile */
+  }
+  
+  .chat-input textarea {
+    font-size: 0.85rem; /* Adjust text area font size on mobile */
+  }
+} 
 
 /* NAV BAR CSS*/
-
-/* Reset CSS */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", sans-serif;
-}
-
 body {
   background-color: #5b6677;
 }
 
 .container {
+  display: flex;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh; /* Occupy the full height of the viewport */
+  overflow: hidden; /* Prevent scroll in the container */
 }
 
 .sidebar {
@@ -149,8 +150,8 @@ body {
   flex-direction: column;
   background-color: #fff;
   padding: 24px;
-  border-radius: 30px;
   transition: all 0.3s;
+  border-right: 1px solid #ccc;
 }
 
 .sidebar .head {
