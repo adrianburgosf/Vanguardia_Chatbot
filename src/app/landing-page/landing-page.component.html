@@ -1,3 +1,112 @@
+<div class="container">
+    <div class="sidebar active">
+        <div class="menu-btn">
+            <i class="fa-solid fa-chevron-left"></i>
+        </div>
+        <div class="head">
+            <div class="user-img">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Faker_2020_interview.jpg" alt="" />
+            </div>
+            <div class="user-details">
+                <p class="title">Bienvenido</p>
+                <p class="name">John Doe</p>
+            </div>
+        </div>
+        <div class="nav">
+            <div class="menu">
+                <p class="title">Main</p>
+                <ul>
+                    <li>
+                        <a href="#">
+                            <i class="icon fa-regular fa-square-plus"></i>
+                            <span class="text">Nuevo chat</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="icon fa-regular fa-user"></i>
+                            <span class="text">Usuario</span>
+                            <i class="arrow fa-solid fa-chevron-down"></i>
+                        </a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a href="#">
+                                    <span class="text">Update info</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="text">Update Faceid</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="text">Delete account</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="icon fa-regular fa-folder-closed"></i>
+                            <span class="text">Chats recientes</span>
+                            <i class="arrow fa-solid fa-chevron-down"></i>
+                        </a>
+                        <ul class="sub-menu">
+                            <li>
+                                <a href="#">
+                                    <span class="text">Earnings</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="text">Subscribers</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="text">Earnings</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="menu">
+                <p class="title">Servicio</p>
+                <ul>
+                    <li>
+                        <a href="#">
+                            <i class="icon fa-regular fa-star"></i>
+                            <span class="text">Analisis</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="menu">
+            <p class="title">Cuenta</p>
+            <ul>
+                <li>
+                    <a href="#">
+                        <i class="icon fa-regular fa-circle-question"></i>
+                        <span class="text">Help</span>
+                    </a>
+                </li>
+                <li>
+                    <a>
+                        <i class="icon fa-solid fa-arrow-right-from-bracket"></i>
+                        <span class="text" (click)="logout()">Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
 <div class="chatbot">
     <header>
         <h2>Chatbot</h2>
@@ -7,18 +116,9 @@
             <span class="material-symbols-outlined">smart_toy</span>
             <p>Hi there 👋 <br> How can I help you today?</p>
         </li>
-        <li class="chat outgoing">
-            <p>HOLA</p>
-        </li>
     </ul>
     <div class="chat-input">
         <textarea placeholder="Enter a message..." required></textarea>
         <span id="send-btn" class="material-symbols-outlined">send</span>
     </div>
-</div>
-
-
-
-<div>
-    <button (click)="logout()">Logout</button>
 </div>

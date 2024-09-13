@@ -16,30 +16,60 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService, private renderer: Renderer2) { }
 
   ngOnInit(): void {
-    const menuToggle = document.querySelector('.menu-toggle') as HTMLElement | null;
-    const navigation = document.querySelector('.navigation') as HTMLElement | null;
     const sendChatBtn = document.querySelector('.chat-input span') as HTMLElement | null;
+    const menuItems = document.querySelectorAll('.menu > ul > li') as NodeListOf<HTMLElement>;
+    const sidebarToggle = document.querySelector('.menu-btn') as HTMLElement | null;
+    const sidebar = document.querySelector('.sidebar') as HTMLElement | null;
     this.renderer.setStyle(document.body, 'background-color', 'lightblue');
     let userMessage;
 
     //NAVBAR------------------------------------------------------------------------
 
-    if (menuToggle && navigation) {
-      menuToggle.onclick = () => {
-        navigation.classList.toggle('open');
-      };
+    menuItems.forEach(menuItem => {
+      this.renderer.listen(menuItem, 'click', () => {
+        // Remove 'active' class from all other menu items
+        menuItems.forEach(item => {
+          if (item !== menuItem) {
+            item.classList.remove('active');
+            const subMenu = item.querySelector('ul');
+            if (subMenu) {
+              subMenu.classList.remove('open');
+            }
+          }
+        });
+
+        // Toggle the active class on the clicked item
+        menuItem.classList.toggle('active');
+
+        // Find submenu and toggle its visibility
+        const parentLi = menuItem.parentElement;
+        const subMenu = parentLi?.querySelector('.sub-menu') as HTMLElement;
+        if (subMenu) {
+          this.renderer.listen(menuItem, 'click', (event) => {
+            event.preventDefault();
+
+            // Toggle 'active' class on parent li
+            parentLi?.classList.toggle('active');
+
+            // Toggle visibility of the submenu
+            if (subMenu.style.display === 'block') {
+              subMenu.style.display = 'none';
+            } else {
+              subMenu.style.display = 'block';
+            }
+          });
+        }
+      });
+    });
+
+    // Sidebar toggle functionality
+    if (sidebarToggle && sidebar) {
+      this.renderer.listen(sidebarToggle, 'click', () => {
+        sidebar.classList.toggle('active');
+      });
     }
 
-    // Type assertion and null check for listItems
-    const listItems = document.querySelectorAll('.list-item') as NodeListOf<HTMLElement>;
-    listItems.forEach(item => {
-      item.onclick = () => {
-        // Remove the 'active' class from all items
-        listItems.forEach(listItem => listItem.classList.remove('active'));
-        // Add the 'active' class to the clicked item
-        item.classList.add('active');
-      };
-    });
+
 
     //-------------------------------------------------------------------------------
 
