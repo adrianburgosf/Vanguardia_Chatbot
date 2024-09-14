@@ -22,6 +22,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     const sidebarToggle2 = document.querySelector('.menu-btn2') as HTMLElement | null;
     const sidebar = document.querySelector('.sidebar') as HTMLElement | null;
     const chatInput = document.querySelector('.chat-input textarea') as HTMLTextAreaElement | null;
+    const chatbox = document.querySelector('.chatbox');
+    const nuevoChatBtn = document.getElementById('nuevo-chat-btn');
     const inputInitHeight = chatInput?.scrollHeight;
     this.renderer.setStyle(document.body, 'background-color', 'lightblue');
     let userMessage;
@@ -29,6 +31,9 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     //NAVBAR------------------------------------------------------------------------
 
     menuItems.forEach(menuItem => {
+      if (menuItem.contains(nuevoChatBtn)) {
+        return; // Skip the menuItem logic for Nuevo chat
+      }
       this.renderer.listen(menuItem, 'click', (event) => {
         event.preventDefault(); // Prevent default link behavior
 
@@ -85,7 +90,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     };
 
     const handleChat = (): void => {
-      const chatbox = document.querySelector('.chatbox');
+
       if (chatInput && chatbox) {
         userMessage = chatInput.value.trim();
         if (!userMessage) return;
@@ -111,6 +116,52 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         handleChat();
       }
     });
+
+    const captureChatMessages = (): any[] => {
+      const chatbox = document.querySelector('.chatbox') as HTMLElement | null;
+      const messages: any[] = [];
+
+      // Get all chat message elements (li elements)
+      if (chatbox) {
+        const chatItems = chatbox.querySelectorAll('li');
+
+        chatItems.forEach(chatItem => {
+          const messageType = chatItem.classList.contains('outgoing') ? 'outgoing' : 'incoming';
+          const messageText = chatItem.querySelector('p')?.textContent?.trim() || '';
+          if (messageText) {
+            messages.push({ type: messageType, message: messageText });
+          }
+        });
+      }
+      if (messages.length <= 1) {
+        return []; // Return an empty array if only one message is present
+      }
+      return messages;
+    };
+
+    if (nuevoChatBtn && chatbox) {
+      this.renderer.listen(nuevoChatBtn, 'click', (event: Event) => {
+        event.preventDefault(); // Prevent default action of the anchor tag
+        nuevoChatBtn.classList.remove('active');
+
+
+        const capturedMessages = captureChatMessages();
+        if (capturedMessages.length > 0) {
+          console.log(capturedMessages);
+        }
+        // Clear all chat messages
+        chatbox.innerHTML = '';
+
+        // Add the default message back
+        const defaultMessage = `
+          <li class="chat incoming">
+            <span class="material-symbols-outlined">smart_toy</span>
+            <p>Hi there 👋 <br> How can I help you today?</p>
+          </li>
+        `;
+        chatbox.innerHTML = defaultMessage;
+      });
+    }
 
     //-------------------------------------------------------------------------------
   }
