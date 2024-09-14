@@ -19,45 +19,36 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     const sendChatBtn = document.querySelector('.chat-input span') as HTMLElement | null;
     const menuItems = document.querySelectorAll('.menu > ul > li') as NodeListOf<HTMLElement>;
     const sidebarToggle = document.querySelector('.menu-btn') as HTMLElement | null;
+    const sidebarToggle2 = document.querySelector('.menu-btn2') as HTMLElement | null;
     const sidebar = document.querySelector('.sidebar') as HTMLElement | null;
+    const chatInput = document.querySelector('.chat-input textarea') as HTMLTextAreaElement | null;
+    const inputInitHeight = chatInput?.scrollHeight;
     this.renderer.setStyle(document.body, 'background-color', 'lightblue');
     let userMessage;
 
     //NAVBAR------------------------------------------------------------------------
 
     menuItems.forEach(menuItem => {
-      this.renderer.listen(menuItem, 'click', () => {
-        // Remove 'active' class from all other menu items
+      this.renderer.listen(menuItem, 'click', (event) => {
+        event.preventDefault(); // Prevent default link behavior
+
+        // Toggle the active class on the clicked item
+        menuItem.classList.toggle('active');
+        // Remove 'active' and close other submenus
         menuItems.forEach(item => {
           if (item !== menuItem) {
             item.classList.remove('active');
-            const subMenu = item.querySelector('ul');
+            const subMenu = item.querySelector('.sub-menu') as HTMLElement;
             if (subMenu) {
-              subMenu.classList.remove('open');
+              subMenu.style.display = 'none';
             }
           }
         });
 
-        // Toggle the active class on the clicked item
-        menuItem.classList.toggle('active');
-
-        // Find submenu and toggle its visibility
-        const parentLi = menuItem.parentElement;
-        const subMenu = parentLi?.querySelector('.sub-menu') as HTMLElement;
+        // Toggle visibility of the submenu
+        const subMenu = menuItem.querySelector('.sub-menu') as HTMLElement;
         if (subMenu) {
-          this.renderer.listen(menuItem, 'click', (event) => {
-            event.preventDefault();
-
-            // Toggle 'active' class on parent li
-            parentLi?.classList.toggle('active');
-
-            // Toggle visibility of the submenu
-            if (subMenu.style.display === 'block') {
-              subMenu.style.display = 'none';
-            } else {
-              subMenu.style.display = 'block';
-            }
-          });
+          subMenu.style.display = subMenu.style.display === 'block' ? 'none' : 'block';
         }
       });
     });
@@ -65,6 +56,11 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     // Sidebar toggle functionality
     if (sidebarToggle && sidebar) {
       this.renderer.listen(sidebarToggle, 'click', () => {
+        sidebar.classList.toggle('active');
+      });
+    }
+    if (sidebarToggle2 && sidebar) {
+      this.renderer.listen(sidebarToggle2, 'click', () => {
         sidebar.classList.toggle('active');
       });
     }
@@ -78,29 +74,43 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     const createChatLi = (message: string, className: string): HTMLElement => {
       // Create a chat <li> element with passed message and className
       const chatLi = document.createElement('li');
-      console.log(message);
-      console.log(className);
       chatLi.classList.add("chat", className);
-      let chatContent = className === "outgoing" ? `<p>${message}</p>` : `<span class="material-symbols-outlined">smart_toy</span><p>${message}</p>`;
+      let chatContent = className === "outgoing" ? `<p></p>` : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
       chatLi.innerHTML = chatContent;
+      const paragraph = chatLi.querySelector("p");
+      if (paragraph) {
+        paragraph.textContent = message;
+      }
       return chatLi;
     };
 
     const handleChat = (): void => {
-      const chatInput = document.querySelector('.chat-input textarea') as HTMLTextAreaElement | null;
       const chatbox = document.querySelector('.chatbox');
-
       if (chatInput && chatbox) {
         userMessage = chatInput.value.trim();
         if (!userMessage) return;
         chatbox.appendChild(createChatLi(userMessage, "outgoing"));
+        chatbox.scrollTo(0, chatbox.scrollHeight);
         chatInput.value = '';
+
         setTimeout(() => {
           chatbox.appendChild(createChatLi("Thinking...", "incoming"));
+          chatbox.scrollTo(0, chatbox.scrollHeight);
         }, 600);
       }
     };
+    chatInput?.addEventListener("input", () => {
+      chatInput.style.height = `${inputInitHeight}px`;
+      chatInput.style.height = `${chatInput.scrollHeight}px`;
+    });
     sendChatBtn?.addEventListener("click", handleChat);
+
+    chatInput?.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key === "Enter" && !event.shiftKey) { // Enter key without Shift (to avoid newline)
+        event.preventDefault(); // Prevent default action of Enter (like new line)
+        handleChat();
+      }
+    });
 
     //-------------------------------------------------------------------------------
   }
@@ -109,7 +119,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   }
 
   // Call logout method from AuthService
-  logout() {
+  logout(event: Event) {
+    event.preventDefault();
     this.authService.logout();
   }
 }
