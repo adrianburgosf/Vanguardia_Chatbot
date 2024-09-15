@@ -1,5 +1,4 @@
 const User = require('./userModel');
-const auth = require('../../middleware/auth.js');
 const { OAuth2Client } = require('google-auth-library');
 const axios = require('axios');
 
@@ -84,12 +83,15 @@ const handleFacebookUserControllerFn = async (req, res) => {
     try {
         //Facebook Authentication
         const { token } = req.body;
-        const url = `https://graph.facebook.com/me?fields=id,name,email&access_token=${token}`;
+        console.log(token);
+        const url = `https://graph.facebook.com/me?fields=id,name,email,picture.width(200).height(200)&access_token=${token}`;
         const response = await axios.get(url);
 
+        const profilePicture = response.data.picture.data.url;
         const facebookId = response.data.id;
         const email = response.data.email;
         const name = response.data.name;
+        console.log(profilePicture);
 
         let existingUser = await User.findOne({ email: email });
         if (existingUser) {
@@ -110,8 +112,10 @@ const handleFacebookUserControllerFn = async (req, res) => {
                 email: email,
                 name: name,
                 facebookId: facebookId,
+                profilePicture: profilePicture,
                 authMethod: 'facebook'
             });
+            console.log(user);
             await user.save();
             const tokenClient = await user.generateAuthToken();
             return res.status(200).json({ user: user, tokenClient });

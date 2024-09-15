@@ -16,6 +16,18 @@ export class AuthService {
     return this.http.post('http://localhost:3000/user/facebookRegister', body, { headers });
   }
 
+  // Store user data and token after login
+  setUserData(user: any, token: string) {
+    localStorage.setItem('loginToken', token);
+    localStorage.setItem('userInfo', JSON.stringify(user)); // Store user info
+  }
+
+  // Get user data from local storage
+  getUserData(): any {
+    const userInfo = localStorage.getItem('userInfo');
+    return userInfo ? JSON.parse(userInfo) : null;
+  }
+
   // Check if running in a browser environment
   isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
@@ -34,6 +46,7 @@ export class AuthService {
   logout() {
     if (this.isBrowser()) {
       localStorage.removeItem('loginToken');
+      localStorage.removeItem('userInfo');
     }
     this.router.navigate(['/login']);
   }

@@ -1,5 +1,6 @@
 const express = require('express');
 const userController = require('../src/User/userController');
+const auth = require('../middleware/auth.js');
 
 const router = express.Router();
 
@@ -12,8 +13,8 @@ router.post('/user/facebookRegister', userController.handleFacebookUserControlle
 //Login
 router.post('/user/login', userController.loginUserControllerFn);
 // Get all users
-router.get('/users', userController.getAllUsersControllerFn);
+router.get('/users', auth, userController.getAllUsersControllerFn);
 // Get user by ID
-router.get('/user/:id', userController.getUserByIdControllerFn);
+router.get('/user/:id', auth, userController.getUserByIdControllerFn);
 
 module.exports = router;

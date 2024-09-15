@@ -55,7 +55,8 @@ export class LoginComponent implements OnInit {
           console.log(res);
           if (res && res.tokenClient) {
             console.log('Login successful:', res);
-            localStorage.setItem('loginToken', res.tokenClient);
+            this.service.setUserData(res.user, res.tokenClient);
+            //localStorage.setItem('loginToken', res.tokenClient);
             this.router.navigate(['/landing-page']);
           }
         });
@@ -88,21 +89,18 @@ export class LoginComponent implements OnInit {
     FB.login((response: any) => {
       if (response.status === 'connected') {
         // The user logged in successfully and authorized your app
-        console.log('Logged in and authorized:', response.authResponse);
-        console.log(response.authResponse.accessToken);
+        console.log(response.authResponse);
         this.handleLogin(response.authResponse.accessToken); // Proceed with login
       } else if (response.status === 'not_authorized') {
         // The user is logged into Facebook but has not authorized your app
-        console.log(response.status);
         console.log('Logged into Facebook but not authorized the app');
         this.loginError = 'Please authorize the app to log in.';
       } else {
         // The user isn't logged into Facebook, or they closed the popup without logging in
-        console.log(response.status);
         console.log('User not logged in or closed the popup:', response);
         this.loginError = 'Login cancelled or not authorized.';
       }
-    }, { scope: 'email', auth_type: 'reauthenticate' });
+    }, { scope: 'email, public_profile', auth_type: 'reauthenticate' });
 
   }
 
@@ -112,7 +110,8 @@ export class LoginComponent implements OnInit {
         this._ngZone.run(() => {
           if (res && res.tokenClient) {
             console.log('Login successful:', res);
-            localStorage.setItem('loginToken', res.tokenClient);
+            this.service.setUserData(res.user, res.tokenClient);
+            //localStorage.setItem('loginToken', res.tokenClient);
             this.router.navigate(['/landing-page']);
           }
         });
@@ -145,7 +144,7 @@ export class LoginComponent implements OnInit {
       (res: any) => {
         if (res && res.token) {
           console.log('Login successful:', res);
-          localStorage.setItem('loginToken', res.token);  // Store token
+          this.service.setUserData(res.user, res.token);
           this.router.navigate(['/landing-page']);  // Redirect to landing page
         }
       },

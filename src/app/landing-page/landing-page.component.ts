@@ -13,6 +13,9 @@ import { NgClass, NgFor, NgIf } from '@angular/common';
 })
 export class LandingPageComponent implements OnInit, OnDestroy {
 
+  userName: string = '';
+  profilePicture: string = '';
+
   constructor(private authService: AuthService, private renderer: Renderer2) { }
 
   ngOnInit(): void {
@@ -27,6 +30,12 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     const inputInitHeight = chatInput?.scrollHeight;
     this.renderer.setStyle(document.body, 'background-color', 'lightblue');
     let userMessage;
+
+    const user = this.authService.getUserData();
+    if (user) {
+      this.userName = user.name; // Set the user's name
+      this.profilePicture = user.profilePicture || 'https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small_2x/user-profile-icon-free-vector.jpg'; // Use a default image if none exists
+    }
 
     //NAVBAR------------------------------------------------------------------------
 
