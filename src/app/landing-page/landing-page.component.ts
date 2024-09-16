@@ -103,7 +103,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       if (chatInput && chatbox) {
         userMessage = chatInput.value.trim();
         if (!userMessage) return;
-        chatbox.appendChild(createChatLi(userMessage, "outgoing"));
+        chatbox.appendChild(createChatLi(userMessage, "outgoing")); //crea el chat
         chatbox.scrollTo(0, chatbox.scrollHeight);
         chatInput.value = '';
 
