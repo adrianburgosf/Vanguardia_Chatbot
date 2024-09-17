@@ -1,16 +1,18 @@
 declare var google: any;
 declare var FB: any;
+declare var enrollNewUser: any;
+
 import { NgIf } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, NgZone } from '@angular/core';
-import { FormsModule } from '@angular/forms';  // Import FormsModule for ngModel
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, NgIf],  // Import FormsModule here
+  imports: [FormsModule, NgIf],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
@@ -139,35 +141,46 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    let userData = {
-      "email": this.email,
-      "name": this.name,
-      "password": this.password,
-      "profilePicture": this.profilePicture,
-    };
-    this.http.post('http://localhost:3000/user/create', userData)
-      .subscribe(
-        response => {
-          console.log('User registered:', response);
-          //Falta poner un alert bonito de que se registro el usuario
-          alert('Registered!');
-          this.router.navigate(['/login']);
-        },
-        (error) => {
-          if (error.status === 400) {
-            this.RegisterError = 'User already exists';
-            this.name = '';
-            this.password = '';
-            this.confirmPassword = '';
-          }
-          else {
-            this.RegisterError = 'An error occurred. Please try again later.';
-            this.password = '';
-            this.name = '';
-            this.confirmPassword = '';
-          }
-        }
-      );
+    enrollNewUser(this.email, this.name,
+      (facialId: string) => {
+        console.log(facialId);
+        let userData = {
+          "email": this.email,
+          "name": this.name,
+          "password": this.password,
+          "profilePicture": null,
+          "facialId": facialId,
+        };
+        this.http.post('http://localhost:3000/user/create', userData)
+          .subscribe(
+            response => {
+              console.log('User registered:', response);
+              //Falta poner un alert bonito de que se registro el usuario
+              alert('Registered!');
+              this.router.navigate(['/login']);
+            },
+            (error) => {
+              if (error.status === 400) {
+                this.RegisterError = 'User already exists';
+                this.name = '';
+                this.password = '';
+                this.confirmPassword = '';
+              }
+              else {
+                this.RegisterError = 'An error occurred. Please try again later.';
+                this.password = '';
+                this.name = '';
+                this.confirmPassword = '';
+              }
+            }
+          );
+      },
+      (errCode: any) => {
+        console.log(errCode);
+        this.RegisterError = 'Facial enrollment failed. Please try again.';
+      }
+    );
+
   }
 
   isValidEmail(email: string): boolean {

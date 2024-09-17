@@ -12,9 +12,13 @@ router.post('/user/googleRegister', userController.createGoogleUserControllerFn)
 router.post('/user/facebookRegister', userController.handleFacebookUserControllerFn);
 //Login
 router.post('/user/login', userController.loginUserControllerFn);
+//Login FaceID
+router.post('/user/loginFaceID', userController.loginFaceIDControllerFn);
 // Get all users
 router.get('/users', auth, userController.getAllUsersControllerFn);
 // Get user by ID
 router.get('/user/:id', auth, userController.getUserByIdControllerFn);
+//Delete FaceID
+router.delete('/user/deletefacialid/:facialId', userController.deleteFacialIdControllerFn);
 
 module.exports = router;

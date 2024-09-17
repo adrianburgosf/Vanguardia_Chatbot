@@ -1,5 +1,6 @@
 <div class="main-container">
     <div class="login-card">
+        <button id="cancelButton" style="display: none;" onclick="cancelProcess()">X</button>
         <h2>Iniciar Sesión</h2>
 
         <form class="login-form" (ngSubmit)="login()">
@@ -24,7 +25,7 @@
         </button>
 
 
-        <button type="button" class="icon-button">
+        <button type="button" class="icon-button" (click)="faceLogin()">
             <span class="fa-stack custom-stack-size">
                 <i class="fa-solid fa-expand custom-stack-2x"></i>
                 <i class="fa-solid fa-user fa-stack-1x"></i>

@@ -4,10 +4,36 @@ const axios = require('axios');
 
 const client = new OAuth2Client('556072889645-crfml8nhdb89lvitidhvaqad8v2oe3o6.apps.googleusercontent.com');
 
+//Delete FaceID
+const deleteFacialIdControllerFn = async (req, res) => {
+    try {
+        const { facialId } = req.params;  // Get Facial ID from request parameters
+
+        // Make request to FACEIO to delete the facial ID
+        const response = await axios.get('https://api.faceio.net/deletefacialid', {
+            params: {
+                fid: facialId,
+                key: 'c9137acab3418ae5c7343a027fa6a8bf'  // Replace with your actual FACEIO API Key
+            }
+        });
+
+        // Check for success status in response
+        if (response.data.status !== 200) {
+            return res.status(400).json({ msg: response.data.error });
+        }
+
+        // If successful, return a success message
+        return res.status(200).json({ msg: 'Facial ID, associated payload data, and biometrics hash deleted successfully' });
+    } catch (err) {
+        // Handle any errors (network, API issues, etc.)
+        return res.status(500).json({ message: 'An error occurred while deleting the Facial ID', error: err.message });
+    }
+};
+
 //Create new user
 const createUserControllerFn = async (req, res) => {
     try {
-        const { email, name, password, profilePicture, authMethod } = req.body;
+        const { email, name, password, profilePicture, authMethod, facialId } = req.body;
 
         // Check if user already exists
         let user = await User.findOne({ email });
@@ -21,7 +47,8 @@ const createUserControllerFn = async (req, res) => {
             name,
             password,
             profilePicture,
-            authMethod: authMethod || 'email' // Default for email/password registration
+            authMethod: authMethod || 'email', // Default for email/password registration
+            facialId
         });
 
         await user.save();
@@ -159,6 +186,25 @@ const loginUserControllerFn = async (req, res) => {
     }
 };
 
+//Login FACEID
+const loginFaceIDControllerFn = async (req, res) => {
+    try {
+        const { facialId } = req.body;
+
+        // Check if user exists
+        const user = await User.findOne({ facialId });
+        if (!user) {
+            return res.status(404).json({ msg: 'No account found with this faceID' });
+        }
+
+        //Create token
+        const token = await user.generateAuthToken();
+        res.status(200).json({ user, token });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 // Get all users
 const getAllUsersControllerFn = async (req, res) => {
     try {
@@ -192,4 +238,6 @@ module.exports = {
     getAllUsersControllerFn,
     getUserByIdControllerFn,
     handleFacebookUserControllerFn,
+    deleteFacialIdControllerFn,
+    loginFaceIDControllerFn,
 };

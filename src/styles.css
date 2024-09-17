@@ -1,2 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
+#faceio-modal {
+    z-index: 999 !important; /* Ensure it has the highest z-index */
+    position: relative;
+    /*pointer-events: none;*/
+}

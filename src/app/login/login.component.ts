@@ -1,5 +1,7 @@
 declare var google: any;
 declare var FB: any;
+declare var authenticateUser: any;
+
 import { Component, OnInit, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -182,6 +184,41 @@ export class LoginComponent implements OnInit {
             password: ''
           };
         }
+      }
+    );
+  }
+
+  //FaceIDLogin
+  faceLogin() {
+    authenticateUser(
+      (facialId: string) => {
+        // If FACEIO successfully returns the facial ID, proceed with backend login
+        let userLoginData = {
+          "facialId": facialId,  // Use the facial ID for login
+        };
+        console.log(facialId);
+
+        this.http.post('http://localhost:3000/user/loginFaceID', userLoginData)
+          .subscribe(
+            (response: any) => {
+              if (response && response.token) {
+                console.log('Login successful:', response);
+                this.service.setUserData(response.user, response.token);
+                this.router.navigate(['/landing-page']);  // Redirect to landing page
+              }
+            },
+            (error) => {
+              if (error.status === 404) {
+                this.loginError = 'No account found with this facial ID. Please sign up first.';
+              } else {
+                this.loginError = 'An error occurred. Please try again later.';
+              }
+            }
+          );
+      },
+      (errCode: any) => {
+        console.log(errCode)
+        this.loginError = 'Facial authentication failed. Please try again.';
       }
     );
   }
