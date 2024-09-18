@@ -1,6 +1,7 @@
 declare var google: any;
 declare var FB: any;
 declare var authenticateUser: any;
+declare var enrollNewUser: any;
 
 import { Component, OnInit, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -47,6 +48,32 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  updateFaceID(email: string, name: string,): void {
+    enrollNewUser(email, name,
+      (facialId: string) => {
+        console.log(facialId);
+
+        this.http.post('http://localhost:3000/user/updateFacialId', { email, facialId })
+          .subscribe(
+            response => {
+              console.log('FaceID enrollment successful:', response);
+              this.router.navigate(['/landing-page']);
+            },
+            (error) => {
+              console.log(error);
+              alert('An error occurred while postiong facialID.');
+              this.router.navigate(['/landing-page']);
+            }
+          );
+      },
+      (errCode: any) => {
+        console.log(errCode);
+        alert('Facial enrollment failed. You can add FaceID again later.');
+        this.router.navigate(['/landing-page']);
+      }
+    );
+  }
+
   handleCredentialResponse(response: any): void {
     const token = response.credential; // The JWT from Google
 
@@ -57,9 +84,14 @@ export class LoginComponent implements OnInit {
           console.log(res);
           if (res && res.tokenClient) {
             console.log('Login successful:', res);
-            this.service.setUserData(res.user, res.tokenClient);
-            //localStorage.setItem('loginToken', res.tokenClient);
-            this.router.navigate(['/landing-page']);
+            if (res.NewUser) {
+              this.service.setUserData(res.NewUser, res.tokenClient);
+              this.updateFaceID(res.NewUser.email, res.NewUser.name);
+            }
+            else if (res.user) {
+              this.service.setUserData(res.user, res.tokenClient);
+              this.router.navigate(['/landing-page']);
+            }
           }
         });
       },
@@ -112,9 +144,14 @@ export class LoginComponent implements OnInit {
         this._ngZone.run(() => {
           if (res && res.tokenClient) {
             console.log('Login successful:', res);
-            this.service.setUserData(res.user, res.tokenClient);
-            //localStorage.setItem('loginToken', res.tokenClient);
-            this.router.navigate(['/landing-page']);
+            if (res.NewUser) {
+              this.service.setUserData(res.NewUser, res.tokenClient);
+              this.updateFaceID(res.NewUser.email, res.NewUser.name);
+            }
+            else if (res.user) {
+              this.service.setUserData(res.user, res.tokenClient);
+              this.router.navigate(['/landing-page']);
+            }
           }
         });
       },

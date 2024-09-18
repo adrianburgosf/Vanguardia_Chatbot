@@ -1,3 +1,71 @@
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <h4>Update Password</h4>
+
+        <!-- Password Update Form (only if authMethod is email) -->
+        <form *ngIf="authMethod === 'email'" (ngSubmit)="updatePassword()">
+            <!-- New Password -->
+            <div>
+                <label for="newPassword">New Password:</label>
+                <input type="password" [(ngModel)]="newPassword" name="newPassword" required />
+            </div>
+
+            <!-- Confirm New Password -->
+            <div>
+                <label for="confirmPassword">Confirm New Password:</label>
+                <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" required />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit">Update Password</button>
+        </form>
+
+        <!-- Message for non-email authentication methods -->
+        <div *ngIf="authMethod !== 'email'">
+            <p>Password updates are only available for email-based accounts.</p>
+        </div>
+
+        <!-- Close Modal Button -->
+        <button (click)="closePasswordModal()">Cancel</button>
+
+        <!-- Error Message Display -->
+        <div *ngIf="updateError" class="error-message">{{ updateError }}</div>
+    </div>
+</div>
+
+<div id="updateFaceIdModal" class="modal">
+    <div class="modal-content">
+        <h4>Update FaceID</h4>
+        <p>Proceeding with this action will delete your current FaceID and create a new one. Do you want to continue?
+        </p>
+        <div class="modal-buttons">
+            <button (click)="proceedWithUpdate()">Continue</button> <!-- Proceed with FaceID update -->
+            <button (click)="closeModal()">Cancel</button> <!-- Close modal -->
+        </div>
+    </div>
+</div>
+
+<div id="deleteAccountModal" class="modal">
+    <div class="modal-content">
+        <h4>Delete Account</h4>
+        <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+        <div class="modal-buttons">
+            <button (click)="confirmDeleteAccount()">Delete</button> <!-- Confirm account deletion -->
+            <button (click)="closeDeleteAccountModal()">Cancel</button> <!-- Cancel deletion -->
+        </div>
+    </div>
+</div>
+
+<div id="successModal" class="modal">
+    <div class="modal-content">
+        <h4>Success</h4>
+        <p>Your password has been updated</p>
+        <div class="modal-buttons">
+            <button class="success-ok-btn" (click)="closeSuccessModal()">OK</button> <!-- Close the modal -->
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <div class="sidebar active">
         <div class="head">
@@ -30,17 +98,18 @@
                         </a>
                         <ul class="sub-menu">
                             <li>
-                                <a href="#">
-                                    <span class="text">Update info</span>
+                                <a *ngIf="authMethod === 'email'" href="#" (click)="openPasswordModal()">
+                                    <span class="text">Change password</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
-                                    <span class="text">Update Faceid</span>
+                                <a href="#" (click)="openModal()">
+                                    <span class="text">Update
+                                        Faceid</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#">
+                                <a href="#" (click)="openDeleteAccountModal()">
                                     <span class="text">Delete account</span>
                                 </a>
                             </li>

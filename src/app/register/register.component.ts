@@ -44,6 +44,30 @@ export class RegisterComponent implements OnInit {
     }
   }
 
+  //Add FaceID to Facebook and Google accounts
+  updateFaceID(email: string, name: string,): void {
+    enrollNewUser(email, name,
+      (facialId: string) => {
+        console.log(facialId);
+        this.http.post('http://localhost:3000/user/updateFacialId', { email, facialId })
+          .subscribe(
+            response => {
+              console.log('FaceID enrollment successful:', response);
+              this.router.navigate(['/landing-page']);
+            },
+            (error) => {
+              console.log(error);
+              this.router.navigate(['/landing-page']);
+            }
+          );
+      },
+      (errCode: any) => {
+        console.log(errCode);
+        this.router.navigate(['/landing-page']);
+      }
+    );
+  }
+
   //Google Login
   handleCredentialResponse(response: any): void {
     const token = response.credential; // The JWT from Google
@@ -51,11 +75,16 @@ export class RegisterComponent implements OnInit {
     // Send the Google token to the backend
     this.http.post('http://localhost:3000/user/googleRegister', { token }).subscribe(
       (res: any) => {
-        console.log(res);
         if (res && res.tokenClient) {
           console.log('Login successful:', res);
-          localStorage.setItem('loginToken', res.tokenClient);
-          this.router.navigate(['/landing-page']);
+          if (res.NewUser) {
+            this.service.setUserData(res.NewUser, res.tokenClient);
+            this.updateFaceID(res.NewUser.email, res.NewUser.name);
+          }
+          else if (res.user) {
+            this.service.setUserData(res.user, res.tokenClient);
+            this.router.navigate(['/landing-page']);
+          }
         }
       },
       (error) => {
@@ -95,8 +124,14 @@ export class RegisterComponent implements OnInit {
         this._ngZone.run(() => {
           if (res && res.tokenClient) {
             console.log('Login successful:', res);
-            localStorage.setItem('loginToken', res.tokenClient);
-            this.router.navigate(['/landing-page']);
+            if (res.NewUser) {
+              this.service.setUserData(res.NewUser, res.tokenClient);
+              this.updateFaceID(res.NewUser.email, res.NewUser.name);
+            }
+            else if (res.user) {
+              this.service.setUserData(res.user, res.tokenClient);
+              this.router.navigate(['/landing-page']);
+            }
           }
         });
       },
@@ -155,8 +190,6 @@ export class RegisterComponent implements OnInit {
           .subscribe(
             response => {
               console.log('User registered:', response);
-              //Falta poner un alert bonito de que se registro el usuario
-              alert('Registered!');
               this.router.navigate(['/login']);
             },
             (error) => {

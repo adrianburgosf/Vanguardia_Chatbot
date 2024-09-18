@@ -4,6 +4,62 @@ const axios = require('axios');
 
 const client = new OAuth2Client('556072889645-crfml8nhdb89lvitidhvaqad8v2oe3o6.apps.googleusercontent.com');
 
+//Update password
+const updatePasswordController = async (req, res) => {
+    try {
+        // Get the new password from the request body
+        const { newPassword } = req.body;
+        if (!newPassword) {
+            return res.status(400).json({ msg: 'New password is required' });
+        }
+        const user = req.user;
+        // Update the user's password (the pre-save hook in the schema will hash it)
+        user.password = newPassword;
+        await user.save();
+        res.status(200).json({ msg: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Error updating password:', error);
+        res.status(500).json({ msg: 'Server error, please try again later' });
+    }
+};
+
+//Delete Account and FacialId if it has one
+const deleteUserAndFacialIdControllerFn = async (req, res) => {
+    try {
+        const { email } = req.body;  // Get email from request body
+        console.log({ email });
+        // Step 1: Find and delete the user account from the database
+        const user = await User.findOneAndDelete({ email });
+        console.log(user.facialId);
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        const facialId = user.facialId;
+        if (facialId) {
+            const response = await axios.get('https://api.faceio.net/deletefacialid', {
+                params: {
+                    fid: facialId,
+                    key: 'c9137acab3418ae5c7343a027fa6a8bf'
+                }
+            });
+
+            // Check for success status in the FACEIO response
+            if (response.data.status !== 200) {
+                return res.status(400).json({ msg: response.data.error });
+            }
+
+            // If successful, return a success message for both account and facial ID deletion
+            return res.status(200).json({ msg: 'User account and Facial ID deleted successfully' });
+        } else {
+            // If no facial ID exists, return success for only account deletion
+            return res.status(200).json({ msg: 'User account deleted successfully, no facial ID associated' });
+        }
+    } catch (err) {
+        // Handle any errors (network, API issues, etc.)
+        return res.status(500).json({ message: 'An error occurred while deleting the account or Facial ID', error: err.message });
+    }
+};
+
 //Delete FaceID
 const deleteFacialIdControllerFn = async (req, res) => {
     try {
@@ -13,7 +69,7 @@ const deleteFacialIdControllerFn = async (req, res) => {
         const response = await axios.get('https://api.faceio.net/deletefacialid', {
             params: {
                 fid: facialId,
-                key: 'c9137acab3418ae5c7343a027fa6a8bf'  // Replace with your actual FACEIO API Key
+                key: 'c9137acab3418ae5c7343a027fa6a8bf'
             }
         });
 
@@ -27,6 +83,27 @@ const deleteFacialIdControllerFn = async (req, res) => {
     } catch (err) {
         // Handle any errors (network, API issues, etc.)
         return res.status(500).json({ message: 'An error occurred while deleting the Facial ID', error: err.message });
+    }
+};
+
+//Update FaceID
+const updateFacialIdControllerFn = async (req, res) => {
+    try {
+        const { email, facialId } = req.body;
+
+        // Find the user by ID and update the facialId
+        let user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        // Update the user's facialId
+        user.facialId = facialId;
+        await user.save();
+
+        res.status(200).json({ msg: 'Facial ID updated successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
     }
 };
 
@@ -88,18 +165,19 @@ const createGoogleUserControllerFn = async (req, res) => {
             }
         }
         else { //Create a new user 
-            const user = new User({
+            const NewUser = new User({
                 email: email,
                 gmailId: googleId,
                 name: name,
                 profilePicture: profilePicture,
                 authMethod: 'gmail'
             });
-            await user.save();
-            const tokenClient = await user.generateAuthToken();
-            return res.status(200).json({ user: user, tokenClient });
+            await NewUser.save();
+            const tokenClient = await NewUser.generateAuthToken();
+            return res.status(200).json({ NewUser: NewUser, tokenClient });
         }
     } catch (err) {
+        console.log(err);
         res.status(500).json({ message: 'Google token verification failed' });
     }
 }
@@ -110,7 +188,6 @@ const handleFacebookUserControllerFn = async (req, res) => {
     try {
         //Facebook Authentication
         const { token } = req.body;
-        console.log(token);
         const url = `https://graph.facebook.com/me?fields=id,name,email,picture.width(200).height(200)&access_token=${token}`;
         const response = await axios.get(url);
 
@@ -118,7 +195,6 @@ const handleFacebookUserControllerFn = async (req, res) => {
         const facebookId = response.data.id;
         const email = response.data.email;
         const name = response.data.name;
-        console.log(profilePicture);
 
         let existingUser = await User.findOne({ email: email });
         if (existingUser) {
@@ -135,19 +211,19 @@ const handleFacebookUserControllerFn = async (req, res) => {
             }
         }
         else { //Create a new user 
-            const user = new User({
+            const NewUser = new User({
                 email: email,
                 name: name,
                 facebookId: facebookId,
                 profilePicture: profilePicture,
                 authMethod: 'facebook'
             });
-            console.log(user);
-            await user.save();
-            const tokenClient = await user.generateAuthToken();
-            return res.status(200).json({ user: user, tokenClient });
+            await NewUser.save();
+            const tokenClient = await NewUser.generateAuthToken();
+            return res.status(200).json({ NewUser: NewUser, tokenClient });
         }
     } catch (error) {
+        console.log(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
@@ -240,4 +316,7 @@ module.exports = {
     handleFacebookUserControllerFn,
     deleteFacialIdControllerFn,
     loginFaceIDControllerFn,
+    updateFacialIdControllerFn,
+    deleteUserAndFacialIdControllerFn,
+    updatePasswordController
 };
