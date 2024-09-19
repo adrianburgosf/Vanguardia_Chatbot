@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { ChatbotService } from '../chatbot.service';  
+
 
 @Component({
   selector: 'app-landing-page',
@@ -24,8 +26,11 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   newPassword: string = '';
   confirmPassword: string = '';
   updateError: string = '';
+  userMessage: string = '';
+  botResponses: string[] = [];
 
-  constructor(private authService: AuthService, private renderer: Renderer2, private router: Router, private http: HttpClient,) { }
+
+  constructor(private authService: AuthService, private renderer: Renderer2, private router: Router, private http: HttpClient,private chatbotService: ChatbotService) { }
 
   ngOnInit(): void {
     const sendChatBtn = document.querySelector('.chat-input span') as HTMLElement | null;
@@ -93,98 +98,25 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
 
     //-------------------------------------------------------------------------------
-
-    //Chatbotwindow------------------------------------------------------------------
-
-    const createChatLi = (message: string, className: string): HTMLElement => {
-      // Create a chat <li> element with passed message and className
-      const chatLi = document.createElement('li');
-      chatLi.classList.add("chat", className);
-      let chatContent = className === "outgoing" ? `<p></p>` : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
-      chatLi.innerHTML = chatContent;
-      const paragraph = chatLi.querySelector("p");
-      if (paragraph) {
-        paragraph.textContent = message;
-      }
-      return chatLi;
-    };
-
-    const handleChat = (): void => {
-
-      if (chatInput && chatbox) {
-        userMessage = chatInput.value.trim();
-        if (!userMessage) return;
-        chatbox.appendChild(createChatLi(userMessage, "outgoing")); //crea el chat
-        chatbox.scrollTo(0, chatbox.scrollHeight);
-        chatInput.value = '';
-
-        setTimeout(() => {
-          chatbox.appendChild(createChatLi("Thinking...", "incoming"));
-          chatbox.scrollTo(0, chatbox.scrollHeight);
-        }, 600);
-      }
-    };
-    chatInput?.addEventListener("input", () => {
-      chatInput.style.height = `${inputInitHeight}px`;
-      chatInput.style.height = `${chatInput.scrollHeight}px`;
-    });
-    sendChatBtn?.addEventListener("click", handleChat);
-
-    chatInput?.addEventListener("keydown", (event: KeyboardEvent) => {
-      if (event.key === "Enter" && !event.shiftKey) { // Enter key without Shift (to avoid newline)
-        event.preventDefault(); // Prevent default action of Enter (like new line)
-        handleChat();
-      }
-    });
-
-    const captureChatMessages = (): any[] => {
-      const chatbox = document.querySelector('.chatbox') as HTMLElement | null;
-      const messages: any[] = [];
-
-      // Get all chat message elements (li elements)
-      if (chatbox) {
-        const chatItems = chatbox.querySelectorAll('li');
-
-        chatItems.forEach(chatItem => {
-          const messageType = chatItem.classList.contains('outgoing') ? 'outgoing' : 'incoming';
-          const messageText = chatItem.querySelector('p')?.textContent?.trim() || '';
-          if (messageText) {
-            messages.push({ type: messageType, message: messageText });
-          }
-        });
-      }
-      if (messages.length <= 1) {
-        return []; // Return an empty array if only one message is present
-      }
-      return messages;
-    };
-
-    if (nuevoChatBtn && chatbox) {
-      this.renderer.listen(nuevoChatBtn, 'click', (event: Event) => {
-        event.preventDefault(); // Prevent default action of the anchor tag
-        nuevoChatBtn.classList.remove('active');
-
-
-        const capturedMessages = captureChatMessages();
-        if (capturedMessages.length > 0) {
-          console.log(capturedMessages);
-        }
-        // Clear all chat messages
-        chatbox.innerHTML = '';
-
-        // Add the default message back
-        const defaultMessage = `
-          <li class="chat incoming">
-            <span class="material-symbols-outlined">smart_toy</span>
-            <p>Hi there 👋 <br> How can I help you today?</p>
-          </li>
-        `;
-        chatbox.innerHTML = defaultMessage;
-      });
-    }
-
-    //-------------------------------------------------------------------------------
   }
+
+  sendMessage() {
+    if (this.userMessage.trim()) {
+      this.botResponses.push(`You: ${this.userMessage}`);
+      this.chatbotService.sendMessage(this.userMessage).subscribe(
+        (response: any) => {
+          // Suponiendo que la respuesta del bot está en response.text
+          this.botResponses.push(`Bot: ${response.text}`);
+        },
+        (error) => {
+          console.error('Error:', error);
+        }
+      );
+      this.userMessage = '';
+    }
+  }
+
+
   ngOnDestroy(): void {
     this.renderer.removeStyle(document.body, 'background-color');
   }

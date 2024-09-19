@@ -1,6 +1,6 @@
-# botVanguardia
+# my-chat-bot
 
-Simulate a conversational AI similar to ChatGPT for answering user queries and providing assistance.
+answer questions 
 
 This bot has been created using [Bot Framework](https://dev.botframework.com), it shows how to:
 

@@ -1,7 +1,7 @@
 
-# botVanguardia tests
+# my-chat-bot tests
 
-Bot Framework v4 bot tests for `botVanguardia` bot.
+Bot Framework v4 bot tests for `my-chat-bot` bot.
 
 This project uses the [botbuilder-testing](https://www.npmjs.com/package/botbuilder-testing) package and [mocha](https://github.com/mochajs/mocha) to create unit tests for your bot.
 

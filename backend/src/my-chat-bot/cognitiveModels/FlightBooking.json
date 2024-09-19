@@ -1,0 +1,109 @@
+{
+  "luis_schema_version": "3.2.0",
+  "versionId": "0.1",
+  "name": "DesarrolloAplicaciones",
+  "desc": "Modelo LUIS para preguntas sobre desarrollo de aplicaciones de vanguardia",
+  "culture": "es-es",
+  "tokenizerVersion": "1.0.0",
+  "intents": [
+    {
+      "name": "PreguntarSobreDesarrollo"
+    },
+    {
+      "name": "SolicitarAyuda"
+    },
+    {
+      "name": "Chatear"
+    },
+    {
+      "name": "None"
+    }
+  ],
+  "entities": [],
+  "composites": [],
+  "closedLists": [],
+  "patternAnyEntities": [],
+  "regex_entities": [],
+  "prebuiltEntities": [],
+  "model_features": [],
+  "regex_features": [],
+  "patterns": [],
+  "utterances": [
+    {
+      "text": "¿Qué es el desarrollo de aplicaciones de vanguardia?",
+      "intent": "PreguntarSobreDesarrollo",
+      "entities": []
+    },
+    {
+      "text": "Necesito ayuda con desarrollo de aplicaciones.",
+      "intent": "SolicitarAyuda",
+      "entities": []
+    },
+    {
+      "text": "Háblame sobre las últimas tecnologías en desarrollo.",
+      "intent": "PreguntarSobreDesarrollo",
+      "entities": []
+    },
+    {
+      "text": "¿Cómo puedo mejorar mis habilidades en programación?",
+      "intent": "PreguntarSobreDesarrollo",
+      "entities": []
+    },
+    {
+      "text": "Tengo una duda sobre mi proyecto de desarrollo.",
+      "intent": "SolicitarAyuda",
+      "entities": []
+    },
+    {
+      "text": "¿Qué herramientas me recomiendas para desarrollo de software?",
+      "intent": "PreguntarSobreDesarrollo",
+      "entities": []
+    },
+    {
+      "text": "Quiero aprender sobre metodologías ágiles.",
+      "intent": "PreguntarSobreDesarrollo",
+      "entities": []
+    },
+    {
+      "text": "Cuéntame sobre las mejores prácticas en desarrollo.",
+      "intent": "PreguntarSobreDesarrollo",
+      "entities": []
+    },
+    {
+      "text": "¿Cómo puedo hacer que mi aplicación sea más eficiente?",
+      "intent": "PreguntarSobreDesarrollo",
+      "entities": []
+    },
+    {
+      "text": "¿Qué tecnologías son tendencia en el desarrollo de aplicaciones?",
+      "intent": "PreguntarSobreDesarrollo",
+      "entities": []
+    },
+    {
+      "text": "Hablemos sobre desarrollo de aplicaciones.",
+      "intent": "Chatear",
+      "entities": []
+    },
+    {
+      "text": "Solo quería charlar un poco.",
+      "intent": "Chatear",
+      "entities": []
+    },
+    {
+      "text": "Quiero saber más sobre programación.",
+      "intent": "Chatear",
+      "entities": []
+    },
+    {
+      "text": "Necesito conversar sobre temas de tecnología.",
+      "intent": "Chatear",
+      "entities": []
+    },
+    {
+      "text": "No entiendo tu respuesta.",
+      "intent": "None",
+      "entities": []
+    }
+  ],
+  "settings": []
+}

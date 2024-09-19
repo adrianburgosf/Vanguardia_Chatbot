@@ -1,7 +1,7 @@
 {
-    "name": "botVanguardia",
+    "name": "my-chat-bot",
     "version": "1.0.0",
-    "description": "Simulate a conversational AI similar to ChatGPT for answering user queries and providing assistance.",
+    "description": "answer questions ",
     "author": "Generated using Microsoft Bot Builder Yeoman generator v4.22.1",
     "license": "MIT",
     "main": "./lib/index.js",
@@ -42,8 +42,8 @@
         "botbuilder-ai": "~4.22.1",
         "botbuilder-dialogs": "~4.22.1",
         "botbuilder-testing": "~4.22.1",
-        "botVanguardia": "file:",
         "dotenv": "^8.2.0",
+        "my-chat-bot": "file:",
         "replace": "~1.2.0",
         "restify": "~11.1.0"
     },
