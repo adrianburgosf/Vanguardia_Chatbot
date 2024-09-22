@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["mocha"],
     "composite": true,
     "declaration": true,
     "target": "es2017",

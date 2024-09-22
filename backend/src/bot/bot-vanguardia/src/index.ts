@@ -10,8 +10,11 @@ import {
     MemoryStorage,
     UserState
 } from 'botbuilder';
+import { LuisApplication } from 'botbuilder-ai';
 import { DialogAndWelcomeBot } from './bots/dialogAndWelcomeBot';
 import { MainDialog } from './dialogs/mainDialog';
+import { BookingDialog } from './dialogs/bookingDialog';
+import { FlightBookingRecognizer } from './dialogs/flightBookingRecognizer';
 
 // Carga las variables de entorno desde el archivo .env
 const ENV_FILE = path.join(__dirname, '..', '.env');
@@ -41,8 +44,8 @@ const onTurnErrorHandler = async (context, error) => {
         'TurnError'
     );
 
-    await context.sendActivity('El bot encontró un error o fallo.');
-    await context.sendActivity('Para continuar ejecutando este bot, corrige el código fuente del bot.');
+    await context.sendActivity('The bot encountered an error or bug.');
+    await context.sendActivity('To continue to run this bot, please fix the bot source code.');
     await conversationState.delete(context);
 };
 
@@ -54,9 +57,20 @@ const memoryStorage = new MemoryStorage();
 conversationState = new ConversationState(memoryStorage);
 userState = new UserState(memoryStorage);
 
+// Configuración de LUIS
+const { LuisAppId, LuisAPIKey, LuisAPIHostName } = process.env;
+const luisConfig: LuisApplication = {
+    applicationId: LuisAppId || '',
+    endpointKey: LuisAPIKey || '',
+    endpoint: `https://${LuisAPIHostName || 'westus.api.cognitive.microsofttranslator.com'}` // Cambia el endpoint según sea necesario
+};
+
+const luisRecognizer = new FlightBookingRecognizer(luisConfig);
+
 // Crear los diálogos del bot
-const mainDialog = new MainDialog();
-const bot = new DialogAndWelcomeBot(conversationState, userState, mainDialog);
+const bookingDialog = new BookingDialog('bookingDialog');
+const dialog = new MainDialog(luisRecognizer, bookingDialog);
+const bot = new DialogAndWelcomeBot(conversationState, userState, dialog);
 
 // Crear el servidor HTTP
 const server = restify.createServer();
