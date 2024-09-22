@@ -1,6 +1,6 @@
 declare var enrollNewUser: any;
 
-import { Component, Renderer2, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, Renderer2, OnInit, OnDestroy, ViewEncapsulation, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { FormsModule } from '@angular/forms';
 import { NgClass, NgFor, NgIf } from '@angular/common';
@@ -13,7 +13,8 @@ import { HttpClient } from '@angular/common/http';
   imports: [FormsModule, NgClass, NgFor, NgIf],
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class LandingPageComponent implements OnInit, OnDestroy {
 
@@ -27,7 +28,54 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthService, private renderer: Renderer2, private router: Router, private http: HttpClient,) { }
 
+  resetChat() {
+    this.clearBrowserStorage();
+    const chatbotContainer = document.getElementById('chatbot-container');
+    if (chatbotContainer) {
+      // Temporarily remove the content
+      chatbotContainer.innerHTML = '';
+
+      // Rebuild the df-messenger component
+      chatbotContainer.innerHTML = `
+        <df-messenger project-id="winged-helper-434722-f5" agent-id="bff06150-ba37-4fda-8b18-afaa13215397"
+            language-code="en" max-query-length="-1">
+            <df-messenger-chat chat-title="Chatbot Vanguardia">
+            </df-messenger-chat>
+        </df-messenger>
+      `;
+
+      const dfMessenger = chatbotContainer.querySelector('df-messenger');
+      if (dfMessenger) {
+        dfMessenger.addEventListener('df-user-input-entered', (event: any) => {
+          const userMessage = event.detail.input;
+          //this.saveMessage('User', userMessage);
+          console.log(userMessage);
+        });
+
+        // Listen for bot responses
+        dfMessenger.addEventListener('df-response-received', (event: any) => {
+          const botResponse = event.detail?.data?.messages?.[0]?.text;
+          //this.saveMessage('Bot', botResponse);
+          console.log(botResponse);
+        });
+      }
+    }
+  }
+
+  saveMessage(sender: string, message: string) {
+    const chatHistory = localStorage.getItem('chatHistory');
+    const parsedHistory = chatHistory ? JSON.parse(chatHistory) : [];
+    parsedHistory.push({ sender, message });
+    localStorage.setItem('chatHistory', JSON.stringify(parsedHistory));
+  }
+
+  clearBrowserStorage() {
+    sessionStorage.clear();  // Clear the session storage for a fresh chat
+  }
+
+
   ngOnInit(): void {
+    this.resetChat();
     const sendChatBtn = document.querySelector('.chat-input span') as HTMLElement | null;
     const menuItems = document.querySelectorAll('.menu > ul > li') as NodeListOf<HTMLElement>;
     const sidebarToggle = document.querySelector('.menu-btn') as HTMLElement | null;

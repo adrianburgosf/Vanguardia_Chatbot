@@ -85,7 +85,7 @@
                 <p class="title">Main</p>
                 <ul>
                     <li>
-                        <a href="#" id="nuevo-chat-btn">
+                        <a href="#" id="nuevo-chat-btn" (click)="resetChat()">
                             <i class="icon fa-regular fa-square-plus"></i>
                             <span class="text">Nuevo chat</span>
                         </a>
@@ -188,5 +188,12 @@
             <textarea placeholder="Enter a message..." required></textarea>
             <span id="send-btn" class="material-symbols-outlined">send</span>
         </div>
+    </div>
+    <div id="chatbot-container">
+        <df-messenger project-id="winged-helper-434722-f5" agent-id="bff06150-ba37-4fda-8b18-afaa13215397"
+            language-code="en" max-query-length="-1">
+            <df-messenger-chat chat-title="Chatbot Vanguardia">
+            </df-messenger-chat>
+        </df-messenger>
     </div>
 </div>
