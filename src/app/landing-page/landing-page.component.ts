@@ -28,8 +28,13 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthService, private renderer: Renderer2, private router: Router, private http: HttpClient,) { }
 
+  //----------------------------------------------------------------------------------------------
+
+  conversations: any[] = [];
+  selectedConversation: any[] | null = null;  // To hold the selected conversation
+
   resetChat() {
-    this.clearBrowserStorage();
+    this.clearChatHistory();
     const chatbotContainer = document.getElementById('chatbot-container');
     if (chatbotContainer) {
       // Temporarily remove the content
@@ -39,7 +44,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       chatbotContainer.innerHTML = `
         <df-messenger project-id="winged-helper-434722-f5" agent-id="bff06150-ba37-4fda-8b18-afaa13215397"
             language-code="en" max-query-length="-1">
-            <df-messenger-chat chat-title="Chatbot Vanguardia">
+            <df-messenger-chat chat-title="------Chatbot Vanguardia">
             </df-messenger-chat>
         </df-messenger>
       `;
@@ -48,14 +53,14 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       if (dfMessenger) {
         dfMessenger.addEventListener('df-user-input-entered', (event: any) => {
           const userMessage = event.detail.input;
-          //this.saveMessage('User', userMessage);
+          this.saveMessage('User', userMessage);
           console.log(userMessage);
         });
 
         // Listen for bot responses
         dfMessenger.addEventListener('df-response-received', (event: any) => {
           const botResponse = event.detail?.data?.messages?.[0]?.text;
-          //this.saveMessage('Bot', botResponse);
+          this.saveMessage('Bot', botResponse);
           console.log(botResponse);
         });
       }
@@ -69,9 +74,25 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     localStorage.setItem('chatHistory', JSON.stringify(parsedHistory));
   }
 
-  clearBrowserStorage() {
-    sessionStorage.clear();  // Clear the session storage for a fresh chat
+
+  saveChatHistory() {
+    // Retrieve chat history from localStorage and handle null
+    const storedHistory = localStorage.getItem('chatHistory');
+    if (storedHistory) {
+      this.saveConversation(storedHistory);
+      this.resetChat();
+    }
+    else {
+      console.log("empty");
+    }
   }
+
+  clearChatHistory() {
+    sessionStorage.clear();
+    localStorage.removeItem('chatHistory');
+  }
+
+  //-----------------------------------------------------------------------------------------------
 
 
   ngOnInit(): void {
@@ -94,6 +115,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       this.email = user.email;
       this.userName = user.name; // Set the user's name
       this.profilePicture = user.profilePicture || 'https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small_2x/user-profile-icon-free-vector.jpg'; // Use a default image if none exists
+      this.conversations = user.conversations;
     }
 
     //NAVBAR------------------------------------------------------------------------
@@ -233,8 +255,72 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
     //-------------------------------------------------------------------------------
   }
+
+  getFirstMessagePreview(conversation: any): string {
+    // Check if the conversation is a stringified JSON at index '0'
+    if (conversation && conversation[0]) {
+      try {
+        // Parse the string into an array of message objects
+        const parsedConversation = JSON.parse(conversation[0]);
+
+        // Check if parsedConversation is an array of messages
+        if (Array.isArray(parsedConversation) && parsedConversation.length > 0) {
+          const firstMessage = parsedConversation[0].message;  // Access the first message
+          return firstMessage.length > 20 ? firstMessage.slice(0, 20) + '...' : firstMessage;
+        }
+      } catch (error) {
+        console.error('Error parsing conversation:', error);
+        return 'Invalid data';
+      }
+    }
+
+    return 'No messages';
+  }
+
   ngOnDestroy(): void {
     this.renderer.removeStyle(document.body, 'background-color');
+  }
+
+  openChatbotModal(conversation: any) {
+    try {
+      this.selectedConversation = typeof conversation === 'string' ? JSON.parse(conversation) : conversation;
+      const modal = document.getElementById('chatbotModal');
+      if (modal) {
+        modal.style.display = 'block';
+      }
+      conversation = typeof conversation === 'string' ? JSON.parse(conversation) : conversation;
+    } catch (error) {
+      console.error('Error parsing conversation:', error);
+      this.selectedConversation = null;
+    }
+  }
+
+  closeChatbotModal() {
+    const modal = document.getElementById('chatbotModal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+    this.selectedConversation = null;
+  }
+
+  saveConversation(conversationData: any) {
+    const conversation = [
+      conversationData
+    ];
+    this.http.post('http://localhost:3000/user/save-conversation', conversation, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('loginToken')}`  // Include the JWT token in the headers
+      }
+    }).subscribe(
+      (response: any) => {
+        console.log('Conversation saved successfully:', response);
+        this.authService.setOnlyUserData(response.user);
+        this.conversations = response.user.conversations;
+      },
+      (error) => {
+        console.error('Error saving conversation:', error);
+      }
+    );
   }
 
   openPasswordModal() {
@@ -254,12 +340,10 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   // Handle the password update submission
   updatePassword() {
-
     if (this.newPassword !== this.confirmPassword) {
       this.updateError = 'New password and confirmation password do not match';
       return;
     }
-
     const passwordUpdateData = {
       newPassword: this.newPassword
     };

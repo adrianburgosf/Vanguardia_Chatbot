@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema({
         enum: ['email', 'facebook', 'gmail'],
         required: true
     },
+    conversations: {
+        type: [Object],
+        default: [],
+    },
     createdAt: {
         type: Date,
         default: Date.now

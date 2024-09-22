@@ -18,6 +18,8 @@ router.post('/user/loginFaceID', userController.loginFaceIDControllerFn);
 router.post('/user/updateFacialId', userController.updateFacialIdControllerFn);
 //Update Password
 router.post('/user/update-password', auth, userController.updatePasswordController);
+//Save convo
+router.post('/user/save-conversation', auth, userController.updateConversationHistory);
 // Get all users
 router.get('/users', auth, userController.getAllUsersControllerFn);
 // Get user by ID

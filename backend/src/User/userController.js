@@ -23,6 +23,21 @@ const updatePasswordController = async (req, res) => {
     }
 };
 
+//Update Conversation History
+const updateConversationHistory = async (req, res) => {
+    try {
+        let conversationData = req.body;  // Get the conversation from the request body
+        const user = req.user;
+
+        user.conversations.push(conversationData);
+        await user.save();
+        res.status(200).json({ user });
+    } catch (error) {
+        console.error('Error saving conversation:', error);
+        res.status(500).json({ msg: 'Failed to save conversation' });
+    }
+};
+
 //Delete Account and FacialId if it has one
 const deleteUserAndFacialIdControllerFn = async (req, res) => {
     try {
@@ -318,5 +333,6 @@ module.exports = {
     loginFaceIDControllerFn,
     updateFacialIdControllerFn,
     deleteUserAndFacialIdControllerFn,
-    updatePasswordController
+    updatePasswordController,
+    updateConversationHistory
 };

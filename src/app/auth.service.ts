@@ -22,6 +22,10 @@ export class AuthService {
     localStorage.setItem('userInfo', JSON.stringify(user)); // Store user info
   }
 
+  setOnlyUserData(user: any) {
+    localStorage.setItem('userInfo', JSON.stringify(user)); // Store user info
+  }
+
   // Get user data from local storage
   getUserData(): any {
     const userInfo = localStorage.getItem('userInfo');

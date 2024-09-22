@@ -7,7 +7,7 @@
 }
 
 df-messenger {
-  z-index: 999;
+  z-index: 1;
   position: fixed;
   --df-messenger-font-color: #000;
   --df-messenger-font-family: Roboto;
@@ -17,7 +17,11 @@ df-messenger {
   bottom: 0;
   right: 0;
   top: 0;
-  width: 400px;
+  width: 100%;
+}
+
+df-messenger .df-messenger-wrapper .df-messenger-titlebar {
+  display: none !important; /* Hides the default title bar */
 }
 
 /*-------------------------------------------*/
@@ -206,6 +210,11 @@ button {
   transition: all 0.3s ease;
   box-shadow: 0 0 128px 0 rgba(0, 0, 0, 0.1),
               0 32px 64px -48px rgba(0, 0, 0, 0.5);
+  position: relative;
+  left: 20%;
+  top: 10%;
+  width: 75%;
+  height: 75%;
 }
 
 .chatbot header {
@@ -217,6 +226,14 @@ button {
   position: relative;
   flex-direction: row;
   transition: all 0.3s ease;
+}
+
+.close-btn {
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
+  color: #fff;
+  margin-left: 20px;
 }
 
 .chatbot header h2 {
@@ -274,42 +291,7 @@ button {
   border-radius: 10px 10px 10px 0;
 }
 
-.chatbot .chat-input {
-  position: relative; /* Changed from absolute to relative for better control */
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  gap: 5px;
-  background: #fff;
-  padding: 5px 20px;
-  border-top: 1px solid #ccc;
-  transition: all 0.3s ease;
-}
 
-.chat-input textarea {
-  height: 55px;
-  width: 100%;
-  border: none;
-  max-height: 175px;
-  outline: none;
-  font-size: 0.95rem;
-  resize: none;
-  padding: 16px 15px 16px 0;
-}
-
-.chat-input span {
-  align-self: flex-end;
-  height: 55px;
-  line-height: 55px;
-  color: #000;
-  font-size: 1.35rem;
-  cursor: pointer;
-  visibility: hidden;
-}
-
-.chat-input textarea:valid ~ span {
-  visibility: visible;
-}
 
 @media only screen and (max-width: 500px) {
 
@@ -329,8 +311,8 @@ button {
   }
   .sidebar {
     position: absolute !important;
-    width: 500px !important;
-    height: 100vh;
+    width: 100% !important;
+    height: 100% !important;
     display: flex;
     gap: 20px;
     flex-direction: column;
@@ -368,7 +350,7 @@ body {
 .sidebar {
   position: relative;
   width: 256px;
-  height: 100vh;
+  height: 100%;
   display: flex;
   gap: 20px;
   flex-direction: column;
@@ -463,6 +445,8 @@ body {
   padding-left: 20px;
   padding-top: 5px;
   border-left: 1px solid #f6f6f6;
+  max-height: 200px; /* Set a max height for scrolling */
+  overflow-y: auto;  /* Enable vertical scrolling */
 }
 
 .menu .sub-menu li a {
@@ -477,14 +461,16 @@ body {
 }
 
 .menu-btn {
+  z-index: 998 !important;
   width: 50px;
   height: 50px;
   border-radius: 8px;
   display: flex;
   align-items: center;
   margin-left: 20px;
-  color: #fff;
-  background-color: #000;
+  margin-top: 10px;
+  color: #000;
+  background-color: #fff;
 }
 
 .menu-btn2 {
@@ -504,10 +490,10 @@ body {
 }
 
 .menu-btn:hover i {
-  color: #f6f6f6;
+  color: #313131;
 }
 .sidebar.active {
-  z-index: 10px;
+  z-index: 999px !important;
   width: 0;
   opacity: 0;
   position: absolute; /* Changed to absolute to remove it from the layout flow */

@@ -1,3 +1,22 @@
+<div id="chatbotModal" class="modal">
+    <div class="chatbot">
+        <header>
+            <div class="menu-btn2">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+            <span class="close-btn" (click)="closeChatbotModal()">&times;</span>
+            <h2>Chatbot</h2>
+
+        </header>
+        <ul class="chatbox">
+            <li class="chat incoming" *ngFor="let message of selectedConversation">
+                <span class="material-symbols-outlined">smart_toy</span>
+                <p>Hi there 👋 <br> How can I help you today?</p>
+            </li>
+        </ul>
+    </div>
+</div>
+
 <div id="passwordModal" class="modal">
     <div class="modal-content">
         <h4>Update Password</h4>
@@ -85,7 +104,7 @@
                 <p class="title">Main</p>
                 <ul>
                     <li>
-                        <a href="#" id="nuevo-chat-btn" (click)="resetChat()">
+                        <a href="#" id="nuevo-chat-btn" (click)="saveChatHistory()">
                             <i class="icon fa-regular fa-square-plus"></i>
                             <span class="text">Nuevo chat</span>
                         </a>
@@ -122,19 +141,9 @@
                             <i class="arrow fa-solid fa-chevron-down"></i>
                         </a>
                         <ul class="sub-menu">
-                            <li>
-                                <a href="#">
-                                    <span class="text">Earnings</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span class="text">Subscribers</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span class="text">Earnings</span>
+                            <li *ngFor="let conversation of conversations">
+                                <a href="#" (click)="openChatbotModal(conversation)">
+                                    <span class="text">{{ getFirstMessagePreview(conversation) }}</span>
                                 </a>
                             </li>
                         </ul>
@@ -157,12 +166,6 @@
             <p class="title">Cuenta</p>
             <ul>
                 <li>
-                    <a href="#">
-                        <i class="icon fa-regular fa-circle-question"></i>
-                        <span class="text">Help</span>
-                    </a>
-                </li>
-                <li>
                     <a href="" (click)="logout($event)">
                         <i class="icon fa-solid fa-arrow-right-from-bracket"></i>
                         <span class="text">Logout</span>
@@ -171,28 +174,13 @@
             </ul>
         </div>
     </div>
-    <div class="chatbot">
-        <header>
-            <div class="menu-btn">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-            <h2>Chatbot</h2>
-        </header>
-        <ul class="chatbox">
-            <li class="chat incoming">
-                <span class="material-symbols-outlined">smart_toy</span>
-                <p>Hi there 👋 <br> How can I help you today?</p>
-            </li>
-        </ul>
-        <div class="chat-input">
-            <textarea placeholder="Enter a message..." required></textarea>
-            <span id="send-btn" class="material-symbols-outlined">send</span>
-        </div>
+    <div class="menu-btn">
+        <i class="fa-solid fa-bars"></i>
     </div>
     <div id="chatbot-container">
         <df-messenger project-id="winged-helper-434722-f5" agent-id="bff06150-ba37-4fda-8b18-afaa13215397"
             language-code="en" max-query-length="-1">
-            <df-messenger-chat chat-title="Chatbot Vanguardia">
+            <df-messenger-chat chat-title="------Chatbot Vanguardia">
             </df-messenger-chat>
         </df-messenger>
     </div>
