@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LangAnalysisService } from './lang-analysis.service';
 import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({

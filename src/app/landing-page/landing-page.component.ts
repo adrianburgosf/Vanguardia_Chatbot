@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { LangAnalysisService } from '../lang-analysis.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -25,14 +26,50 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   newPassword: string = '';
   confirmPassword: string = '';
   updateError: string = '';
+  private apiKey = 'AIzaSyAh6mgdRoDt_LRZvsKwCDKR7sGDxuUS5Pc';  // Usa tu clave aquí
+  private apiUrl = `https://language.googleapis.com/v1/documents:analyzeSentiment?key=${this.apiKey}`;
 
-  constructor(private authService: AuthService, private renderer: Renderer2, private router: Router, private http: HttpClient,) { }
+
+  constructor(private authService: AuthService, private renderer: Renderer2, private router: Router, private http: HttpClient, private langAnalysisService: LangAnalysisService) { }
 
   //----------------------------------------------------------------------------------------------
 
   conversations: any[] = [];
   selectedConversation: any[] | null = null;  // To hold the selected conversation
+  sentimentResult: string | null = null; // Para almacenar el resultado del análisis
 
+
+  analyzeMessage(message: string) {
+    this.langAnalysisService.analyzeSentiment(message).subscribe(response => {
+      console.log('Sentiment Analysis Response:', response);
+      
+      if (response && response.documentSentiment) {
+        const sentimentScore = response.documentSentiment.score;
+        const sentimentMagnitude = response.documentSentiment.magnitude;
+  
+        // Crear el mensaje para mostrar en el prompt
+        let resultMessage = `Puntuación de Sentimiento: ${sentimentScore} (Magnitud: ${sentimentMagnitude})`;
+  
+        if (sentimentScore > 0.5) {
+          resultMessage += ' (Positivo)';
+        } else if (sentimentScore < -0.5) {
+          resultMessage += ' (Negativo)';
+        } else {
+          resultMessage += ' (Neutral)';
+        }
+  
+        // Mostrar el resultado en un prompt
+        alert(resultMessage);
+      } else {
+        console.error('Estructura de respuesta inesperada:', response);
+        alert('Ocurrió un error en la respuesta del análisis.');
+      }
+    }, error => {
+      console.error('Error analyzing sentiment:', error);
+      alert('Ocurrió un error al intentar analizar el mensaje.');
+    });
+  }
+  
   resetChat() {
     this.clearChatHistory();
     const chatbotContainer = document.getElementById('chatbot-container');
@@ -42,7 +79,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
       // Rebuild the df-messenger component
       chatbotContainer.innerHTML = `
-        <df-messenger project-id="winged-helper-434722-f5" agent-id="bff06150-ba37-4fda-8b18-afaa13215397"
+        <df-messenger project-id="winged-helper-434722-f5" agent-id="abe64535-c4bb-46d3-a5f7-a7a77cb22f35"
             language-code="en" max-query-length="-1">
             <df-messenger-chat chat-title="------Chatbot Vanguardia">
             </df-messenger-chat>
@@ -55,15 +92,37 @@ export class LandingPageComponent implements OnInit, OnDestroy {
           const userMessage = event.detail.input;
           this.saveMessage('User', userMessage);
           console.log(userMessage);
+          
+          // Llamar al análisis de sentimiento
+          this.langAnalysisService.analyzeSentiment(userMessage).subscribe(response => {
+            const sentimentScore = response.documentSentiment.score;
+            let sentimentResult = '';
+      
+            // Procesar el puntaje de sentimiento
+            if (sentimentScore > 0.5) {
+              sentimentResult = 'Puntuación de Sentimiento: ' + sentimentScore + ' (Positivo)';
+            } else if (sentimentScore < -0.5) {
+              sentimentResult = 'Puntuación de Sentimiento: ' + sentimentScore + ' (Negativo)';
+            } else {
+              sentimentResult = 'Puntuación de Sentimiento: ' + sentimentScore + ' (Neutral)';
+            }
+      
+            // Mostrar el resultado en un prompt o en el chat
+            alert(sentimentResult); // O puedes usar this.saveMessage('Sentimiento', sentimentResult);
+      
+          }, error => {
+            console.error('Error analyzing sentiment:', error);
+            alert('Ocurrió un error al intentar analizar el mensaje.');
+          });
         });
-
-        // Listen for bot responses
+      
+        // Escuchar las respuestas del bot
         dfMessenger.addEventListener('df-response-received', (event: any) => {
           const botResponse = event.detail?.data?.messages?.[0]?.text;
           this.saveMessage('Bot', botResponse);
           console.log(botResponse);
         });
-      }
+      }      
     }
   }
 
