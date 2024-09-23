@@ -6,7 +6,7 @@ const routes = require('./routes/routes');
 
 const allowedOrigins = [
     'https://chatbot-vanguardia.netlify.app',
-    'http://localhost:4200'
+    'https://localhost:4200'
 ];
 
 
