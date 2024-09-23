@@ -4,13 +4,17 @@ const app = express();
 const cors = require('cors');
 const routes = require('./routes/routes');
 
-const corsOptions = {
-    origin: 'https://localhost:4200', // This should be the URL of your frontend
-    credentials: true, // To allow sending cookies and authorization headers
-    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
-};
+const allowedOrigins = ['https://chatbot-vanguardia.netlify.app'];
 
-app.use(cors(corsOptions));
+app.use(cors({
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+}));
 app.use(express.json());
 app.use(routes);
 
