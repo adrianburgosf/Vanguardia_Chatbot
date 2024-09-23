@@ -51,6 +51,7 @@ export class AuthService {
     if (this.isBrowser()) {
       localStorage.removeItem('loginToken');
       localStorage.removeItem('userInfo');
+      localStorage.clear();
     }
     this.router.navigate(['/login']);
   }

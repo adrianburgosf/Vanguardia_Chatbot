@@ -97,17 +97,12 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.resetChat();
-    const sendChatBtn = document.querySelector('.chat-input span') as HTMLElement | null;
     const menuItems = document.querySelectorAll('.menu > ul > li') as NodeListOf<HTMLElement>;
     const sidebarToggle = document.querySelector('.menu-btn') as HTMLElement | null;
     const sidebarToggle2 = document.querySelector('.menu-btn2') as HTMLElement | null;
     const sidebar = document.querySelector('.sidebar') as HTMLElement | null;
-    const chatInput = document.querySelector('.chat-input textarea') as HTMLTextAreaElement | null;
-    const chatbox = document.querySelector('.chatbox');
     const nuevoChatBtn = document.getElementById('nuevo-chat-btn');
-    const inputInitHeight = chatInput?.scrollHeight;
     this.renderer.setStyle(document.body, 'background-color', 'lightblue');
-    let userMessage;
 
     const user = this.authService.getUserData();
     if (user) {
@@ -116,6 +111,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       this.userName = user.name; // Set the user's name
       this.profilePicture = user.profilePicture || 'https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small_2x/user-profile-icon-free-vector.jpg'; // Use a default image if none exists
       this.conversations = user.conversations;
+      console.log(this.profilePicture);
     }
 
     //NAVBAR------------------------------------------------------------------------
@@ -160,99 +156,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       });
     }
 
-
-
-    //-------------------------------------------------------------------------------
-
-    //Chatbotwindow------------------------------------------------------------------
-
-    const createChatLi = (message: string, className: string): HTMLElement => {
-      // Create a chat <li> element with passed message and className
-      const chatLi = document.createElement('li');
-      chatLi.classList.add("chat", className);
-      let chatContent = className === "outgoing" ? `<p></p>` : `<span class="material-symbols-outlined">smart_toy</span><p></p>`;
-      chatLi.innerHTML = chatContent;
-      const paragraph = chatLi.querySelector("p");
-      if (paragraph) {
-        paragraph.textContent = message;
-      }
-      return chatLi;
-    };
-
-    const handleChat = (): void => {
-
-      if (chatInput && chatbox) {
-        userMessage = chatInput.value.trim();
-        if (!userMessage) return;
-        chatbox.appendChild(createChatLi(userMessage, "outgoing"));
-        chatbox.scrollTo(0, chatbox.scrollHeight);
-        chatInput.value = '';
-
-        setTimeout(() => {
-          chatbox.appendChild(createChatLi("Thinking...", "incoming"));
-          chatbox.scrollTo(0, chatbox.scrollHeight);
-        }, 600);
-      }
-    };
-    chatInput?.addEventListener("input", () => {
-      chatInput.style.height = `${inputInitHeight}px`;
-      chatInput.style.height = `${chatInput.scrollHeight}px`;
-    });
-    sendChatBtn?.addEventListener("click", handleChat);
-
-    chatInput?.addEventListener("keydown", (event: KeyboardEvent) => {
-      if (event.key === "Enter" && !event.shiftKey) { // Enter key without Shift (to avoid newline)
-        event.preventDefault(); // Prevent default action of Enter (like new line)
-        handleChat();
-      }
-    });
-
-    const captureChatMessages = (): any[] => {
-      const chatbox = document.querySelector('.chatbox') as HTMLElement | null;
-      const messages: any[] = [];
-
-      // Get all chat message elements (li elements)
-      if (chatbox) {
-        const chatItems = chatbox.querySelectorAll('li');
-
-        chatItems.forEach(chatItem => {
-          const messageType = chatItem.classList.contains('outgoing') ? 'outgoing' : 'incoming';
-          const messageText = chatItem.querySelector('p')?.textContent?.trim() || '';
-          if (messageText) {
-            messages.push({ type: messageType, message: messageText });
-          }
-        });
-      }
-      if (messages.length <= 1) {
-        return []; // Return an empty array if only one message is present
-      }
-      return messages;
-    };
-
-    if (nuevoChatBtn && chatbox) {
-      this.renderer.listen(nuevoChatBtn, 'click', (event: Event) => {
-        event.preventDefault(); // Prevent default action of the anchor tag
-        nuevoChatBtn.classList.remove('active');
-
-
-        const capturedMessages = captureChatMessages();
-        if (capturedMessages.length > 0) {
-          console.log(capturedMessages);
-        }
-        // Clear all chat messages
-        chatbox.innerHTML = '';
-
-        // Add the default message back
-        const defaultMessage = `
-          <li class="chat incoming">
-            <span class="material-symbols-outlined">smart_toy</span>
-            <p>Hi there 👋 <br> How can I help you today?</p>
-          </li>
-        `;
-        chatbox.innerHTML = defaultMessage;
-      });
-    }
-
     //-------------------------------------------------------------------------------
   }
 
@@ -281,14 +184,64 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     this.renderer.removeStyle(document.body, 'background-color');
   }
 
+  createChatLi = (message: string, className: string): HTMLElement => {
+    // Create a chat <li> element with passed message and className
+    const chatLi = document.createElement('li');
+    chatLi.classList.add("chat", className);
+    let chatContent = className === "outgoing" ? `<p></p>` : `<p></p>`;
+    chatLi.innerHTML = chatContent;
+    const paragraph = chatLi.querySelector("p");
+    if (paragraph) {
+      paragraph.textContent = message;
+    }
+    return chatLi;
+  };
+
+  handleChat = (userMessages: any, botMessages: any): void => {
+    const chatbox = document.querySelector('.chatbox');
+
+    if (chatbox && userMessages && botMessages) {
+      const maxLength = Math.max(userMessages.length, botMessages.length);  // Get the longest array length
+
+      // Loop through both arrays, and append user and bot messages alternately
+      for (let i = 0; i < maxLength; i++) {
+        const userMessage = userMessages[i];
+        const botMessage = botMessages[i];
+
+        // Append user message if it exists
+        if (userMessage) {
+          chatbox.appendChild(this.createChatLi(userMessage, "outgoing"));
+          chatbox.scrollTo(0, chatbox.scrollHeight);  // Scroll to the latest message
+        }
+
+        // Append bot message if it exists
+        if (botMessage) {
+          chatbox.appendChild(this.createChatLi(botMessage, "incoming"));
+          chatbox.scrollTo(0, chatbox.scrollHeight);  // Scroll to the latest message
+        }
+      }
+    }
+  };
+
   openChatbotModal(conversation: any) {
     try {
-      this.selectedConversation = typeof conversation === 'string' ? JSON.parse(conversation) : conversation;
+      //Show the modal -------------------------------------------
       const modal = document.getElementById('chatbotModal');
       if (modal) {
         modal.style.display = 'block';
       }
-      conversation = typeof conversation === 'string' ? JSON.parse(conversation) : conversation;
+      //----------------------------------------------------------
+      const conversationparse = JSON.parse(conversation);
+
+      const userMessages: string[] = conversationparse
+        .filter((messageObj: { sender: string; message: string }) => messageObj.sender === 'User')
+        .map((messageObj: { sender: string; message: string }) => messageObj.message);
+
+      const botMessages: string[] = conversationparse
+        .filter((messageObj: { sender: string; message: string }) => messageObj.sender === 'Bot')
+        .map((messageObj: { sender: string; message: string }) => messageObj.message);
+
+      this.handleChat(userMessages, botMessages);
     } catch (error) {
       console.error('Error parsing conversation:', error);
       this.selectedConversation = null;
@@ -436,6 +389,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         // Navigate or perform any cleanup if needed
         this.authService.logout();
         this.router.navigate(['/login']);
+        this.clearChatHistory();
       },
       (error: any) => {
         console.error('Error deleting account:', error);
@@ -488,6 +442,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   // Call logout method from AuthService
   logout(event: Event) {
     event.preventDefault();
+    this.saveChatHistory();
     this.authService.logout();
   }
 }
