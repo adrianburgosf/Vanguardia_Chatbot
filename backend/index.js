@@ -3,14 +3,18 @@ const mongoose = require('mongoose');
 const app = express();
 const cors = require('cors');
 const routes = require('./routes/routes');
+const allowedOrigins = ['https://test-branch--chatbot-vanguardia.netlify.app'];
 
-const corsOptions = {
-    origin: 'https://test-branch--chatbot-vanguardia.netlify.app/', // This should be the URL of your frontend
-    credentials: true, // To allow sending cookies and authorization headers
-    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
-};
+app.use(cors({
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+}));
 
-app.use(cors(corsOptions));
 app.use(express.json());
 app.use(routes);
 
