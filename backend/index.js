@@ -4,7 +4,11 @@ const app = express();
 const cors = require('cors');
 const routes = require('./routes/routes');
 
-const allowedOrigins = ['https://chatbot-vanguardia.netlify.app'];
+const allowedOrigins = [
+    'https://chatbot-vanguardia.netlify.app',
+    'http://localhost:4200'
+];
+
 
 app.use(cors({
     origin: function (origin, callback) {
