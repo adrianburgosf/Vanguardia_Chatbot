@@ -54,7 +54,7 @@ const deleteUserAndFacialIdControllerFn = async (req, res) => {
             const response = await axios.get('https://api.faceio.net/deletefacialid', {
                 params: {
                     fid: facialId,
-                    key: 'f8ccf209ef86577375f89c833c45d44e'
+                    key: 'd759019c75e85520649b2b29a6c7280a'
                 }
             });
 
@@ -84,7 +84,7 @@ const deleteFacialIdControllerFn = async (req, res) => {
         const response = await axios.get('https://api.faceio.net/deletefacialid', {
             params: {
                 fid: facialId,
-                key: 'f8ccf209ef86577375f89c833c45d44e'
+                key: 'd759019c75e85520649b2b29a6c7280a'
             }
         });
 
