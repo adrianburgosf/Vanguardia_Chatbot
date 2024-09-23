@@ -49,7 +49,7 @@ export class RegisterComponent implements OnInit {
     enrollNewUser(email, name,
       (facialId: string) => {
         console.log(facialId);
-        this.http.post('http://localhost:3000/user/updateFacialId', { email, facialId })
+        this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/updateFacialId', { email, facialId })
           .subscribe(
             response => {
               console.log('FaceID enrollment successful:', response);
@@ -73,7 +73,7 @@ export class RegisterComponent implements OnInit {
     const token = response.credential; // The JWT from Google
 
     // Send the Google token to the backend
-    this.http.post('http://localhost:3000/user/googleRegister', { token }).subscribe(
+    this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/googleRegister', { token }).subscribe(
       (res: any) => {
         if (res && res.tokenClient) {
           console.log('Login successful:', res);
@@ -186,7 +186,7 @@ export class RegisterComponent implements OnInit {
           "profilePicture": null,
           "facialId": facialId,
         };
-        this.http.post('http://localhost:3000/user/create', userData)
+        this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/create', userData)
           .subscribe(
             response => {
               console.log('User registered:', response);

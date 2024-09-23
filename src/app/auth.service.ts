@@ -14,7 +14,7 @@ export class AuthService {
   LoginWithFacebook(token: string): Observable<any> {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     const body = JSON.stringify({ token });
-    return this.http.post('http://localhost:3000/user/facebookRegister', body, { headers });
+    return this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/facebookRegister', body, { headers });
   }
 
   // Store user data and token after login

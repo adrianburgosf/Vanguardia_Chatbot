@@ -1,4 +1,4 @@
-const faceio = new faceIO("fioa8c47");
+const faceio = new faceIO("fioa1a40");
 
 function enrollNewUser(email, name, onSuccess, onFailure) {
     // Start the facial enrollment process

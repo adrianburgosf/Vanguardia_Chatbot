@@ -42,14 +42,14 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   analyzeMessage(message: string) {
     this.langAnalysisService.analyzeSentiment(message).subscribe(response => {
       console.log('Sentiment Analysis Response:', response);
-      
+
       if (response && response.documentSentiment) {
         const sentimentScore = response.documentSentiment.score;
         const sentimentMagnitude = response.documentSentiment.magnitude;
-  
+
         // Crear el mensaje para mostrar en el prompt
         let resultMessage = `Puntuación de Sentimiento: ${sentimentScore} (Magnitud: ${sentimentMagnitude})`;
-  
+
         if (sentimentScore > 0.5) {
           resultMessage += ' (Positivo)';
         } else if (sentimentScore < -0.5) {
@@ -57,7 +57,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         } else {
           resultMessage += ' (Neutral)';
         }
-  
+
         // Mostrar el resultado en un prompt
         alert(resultMessage);
       } else {
@@ -69,7 +69,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       alert('Ocurrió un error al intentar analizar el mensaje.');
     });
   }
-  
+
   resetChat() {
     this.clearChatHistory();
     const chatbotContainer = document.getElementById('chatbot-container');
@@ -92,12 +92,12 @@ export class LandingPageComponent implements OnInit, OnDestroy {
           const userMessage = event.detail.input;
           this.saveMessage('User', userMessage);
           console.log(userMessage);
-          
+
           // Llamar al análisis de sentimiento
           this.langAnalysisService.analyzeSentiment(userMessage).subscribe(response => {
             const sentimentScore = response.documentSentiment.score;
             let sentimentResult = '';
-      
+
             // Procesar el puntaje de sentimiento
             if (sentimentScore > 0.5) {
               sentimentResult = 'Puntuación de Sentimiento: ' + sentimentScore + ' (Positivo)';
@@ -106,23 +106,23 @@ export class LandingPageComponent implements OnInit, OnDestroy {
             } else {
               sentimentResult = 'Puntuación de Sentimiento: ' + sentimentScore + ' (Neutral)';
             }
-      
+
             // Mostrar el resultado en un prompt o en el chat
             alert(sentimentResult); // O puedes usar this.saveMessage('Sentimiento', sentimentResult);
-      
+
           }, error => {
             console.error('Error analyzing sentiment:', error);
             alert('Ocurrió un error al intentar analizar el mensaje.');
           });
         });
-      
+
         // Escuchar las respuestas del bot
         dfMessenger.addEventListener('df-response-received', (event: any) => {
           const botResponse = event.detail?.data?.messages?.[0]?.text;
           this.saveMessage('Bot', botResponse);
           console.log(botResponse);
         });
-      }      
+      }
     }
   }
 
@@ -319,7 +319,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     const conversation = [
       conversationData
     ];
-    this.http.post('http://localhost:3000/user/save-conversation', conversation, {
+    this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/save-conversation', conversation, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('loginToken')}`  // Include the JWT token in the headers
       }
@@ -360,7 +360,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       newPassword: this.newPassword
     };
     // Make the API call to update the password
-    this.http.post('http://localhost:3000/user/update-password', passwordUpdateData, {
+    this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/update-password', passwordUpdateData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('loginToken')}`  // Include the JWT token in the headers
       }
@@ -442,7 +442,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   }
 
   deleteAccount(): void {
-    this.http.post('http://localhost:3000/user/delete', { email: this.email }).subscribe(
+    this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/delete', { email: this.email }).subscribe(
       (response: any) => {
         console.log('User account deleted:', response);
         // Navigate or perform any cleanup if needed
@@ -461,7 +461,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     const user2 = this.authService.getUserData();
     console.log(user2);
     if (user2.facialId) {
-      this.http.delete(`http://localhost:3000/user/deletefacialid/${user2.facialId}`).subscribe(
+      this.http.delete(`https://vanguardia-chatbot-backend.onrender.com/user/deletefacialid/${user2.facialId}`).subscribe(
         (response: any) => {
           console.log('Facial ID deleted:', response);
         },
@@ -477,7 +477,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       (facialId: string) => {
         console.log(facialId);
 
-        this.http.post('http://localhost:3000/user/updateFacialId', { email, facialId })
+        this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/updateFacialId', { email, facialId })
           .subscribe(
             response => {
               console.log('FaceID enrollment successful:', response);

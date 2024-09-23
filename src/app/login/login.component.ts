@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit {
       (facialId: string) => {
         console.log(facialId);
 
-        this.http.post('http://localhost:3000/user/updateFacialId', { email, facialId })
+        this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/updateFacialId', { email, facialId })
           .subscribe(
             response => {
               console.log('FaceID enrollment successful:', response);
@@ -78,7 +78,7 @@ export class LoginComponent implements OnInit {
     const token = response.credential; // The JWT from Google
 
     // Send the Google token to the backend
-    this.http.post('http://localhost:3000/user/googleRegister', { token }).subscribe(
+    this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/googleRegister', { token }).subscribe(
       (res: any) => {
         this._ngZone.run(() => {
           console.log(res);
@@ -179,7 +179,7 @@ export class LoginComponent implements OnInit {
 
   //Normal Email Login
   login() {
-    this.http.post('http://localhost:3000/user/login', this.loginObj).subscribe(
+    this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/login', this.loginObj).subscribe(
       (res: any) => {
         if (res && res.token) {
           console.log('Login successful:', res);
@@ -235,7 +235,7 @@ export class LoginComponent implements OnInit {
         };
         console.log(facialId);
 
-        this.http.post('http://localhost:3000/user/loginFaceID', userLoginData)
+        this.http.post('https://vanguardia-chatbot-backend.onrender.com/user/loginFaceID', userLoginData)
           .subscribe(
             (response: any) => {
               if (response && response.token) {
