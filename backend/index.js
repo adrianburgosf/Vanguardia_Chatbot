@@ -5,7 +5,7 @@ const cors = require('cors');
 const routes = require('./routes/routes');
 
 const corsOptions = {
-    origin: 'https://localhost:4200', // This should be the URL of your frontend
+    origin: 'https://test-branch--chatbot-vanguardia.netlify.app/', // This should be the URL of your frontend
     credentials: true, // To allow sending cookies and authorization headers
     methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
 };
