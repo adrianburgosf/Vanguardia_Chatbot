@@ -79,7 +79,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
       // Rebuild the df-messenger component
       chatbotContainer.innerHTML = `
-        <df-messenger project-id="winged-helper-434722-f5" agent-id="abe64535-c4bb-46d3-a5f7-a7a77cb22f35"
+        <df-messenger project-id="winged-helper-434722-f5" agent-id="bff06150-ba37-4fda-8b18-afaa13215397"
             language-code="en" max-query-length="-1">
             <df-messenger-chat chat-title="------Chatbot Vanguardia">
             </df-messenger-chat>
@@ -92,28 +92,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
           const userMessage = event.detail.input;
           this.saveMessage('User', userMessage);
           console.log(userMessage);
-
-          // Llamar al análisis de sentimiento
-          this.langAnalysisService.analyzeSentiment(userMessage).subscribe(response => {
-            const sentimentScore = response.documentSentiment.score;
-            let sentimentResult = '';
-
-            // Procesar el puntaje de sentimiento
-            if (sentimentScore > 0.5) {
-              sentimentResult = 'Puntuación de Sentimiento: ' + sentimentScore + ' (Positivo)';
-            } else if (sentimentScore < -0.5) {
-              sentimentResult = 'Puntuación de Sentimiento: ' + sentimentScore + ' (Negativo)';
-            } else {
-              sentimentResult = 'Puntuación de Sentimiento: ' + sentimentScore + ' (Neutral)';
-            }
-
-            // Mostrar el resultado en un prompt o en el chat
-            alert(sentimentResult); // O puedes usar this.saveMessage('Sentimiento', sentimentResult);
-
-          }, error => {
-            console.error('Error analyzing sentiment:', error);
-            alert('Ocurrió un error al intentar analizar el mensaje.');
-          });
         });
 
         // Escuchar las respuestas del bot
@@ -164,6 +142,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
     this.renderer.setStyle(document.body, 'background-color', 'lightblue');
 
     const user = this.authService.getUserData();
+    console.log(user.profilePicture);
     if (user) {
       this.authMethod = user.authMethod;
       this.email = user.email;
@@ -325,6 +304,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       }
     }).subscribe(
       (response: any) => {
+        this.analyzeMessage(conversationData);
         console.log('Conversation saved successfully:', response);
         this.authService.setOnlyUserData(response.user);
         this.conversations = response.user.conversations;
